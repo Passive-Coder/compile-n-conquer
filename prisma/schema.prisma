@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model
+model User {
+  id            String      @id @default(cuid())
+  username      String      @unique
+  email         String      @unique
+  passwordHash  String
+  rating        Int         @default(1000)
+  gamesPlayed   Int         @default(0)
+  gamesWon      Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  submissions   Submission[]
+  gameParticipants GameParticipant[]
+}
+
+// Topic model (e.g., Arrays, Strings, Algorithms, Data Structures)
+model Topic {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  createdAt   DateTime    @default(now())
+  
+  // Relations
+  challenges  Challenge[]
+}
+
+// Challenge/Problem model
+model Challenge {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  difficulty  Difficulty
+  topicId     String
+  testCases   String      // JSON string of test cases
+  starterCode String?     // Optional starter code
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  topic       Topic       @relation(fields: [topicId], references: [id])
+  games       Game[]
+}
+
+// Game Format enum
+enum GameFormat {
+  FASTEST_CODE    // Who can solve it first
+  SHORTEST_CODE   // Who can write the shortest solution
+  FIX_CODE        // Who can fix broken code fastest
+}
+
+// Difficulty enum
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+// Game Status enum
+enum GameStatus {
+  WAITING       // Waiting for players
+  IN_PROGRESS   // Game is active
+  COMPLETED     // Game finished
+  CANCELLED     // Game was cancelled
+}
+
+// Game model (a match between players)
+model Game {
+  id          String      @id @default(cuid())
+  format      GameFormat
+  challengeId String
+  status      GameStatus  @default(WAITING)
+  maxPlayers  Int         @default(2)
+  durationMinutes Int     @default(10) // Game duration in minutes
+  startTime   DateTime?
+  endTime     DateTime?
+  winnerId    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  challenge   Challenge   @relation(fields: [challengeId], references: [id])
+  participants GameParticipant[]
+  submissions Submission[]
+}
+
+// Game Participant model (join table with additional data)
+model GameParticipant {
+  id          String      @id @default(cuid())
+  gameId      String
+  userId      String
+  joinedAt    DateTime    @default(now())
+  placement   Int?        // Final ranking (1st, 2nd, etc.)
+  score       Int?        // Points earned
+  
+  // Relations
+  game        Game        @relation(fields: [gameId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+  
+  @@unique([gameId, userId])
+}
+
+// Submission model
+model Submission {
+  id          String      @id @default(cuid())
+  gameId      String
+  userId      String
+  code        String
+  language    String      @default("javascript")
+  isPassing   Boolean     @default(false)
+  executionTime Float?    // in milliseconds
+  codeLength  Int?        // character count for shortest code format
+  submittedAt DateTime    @default(now())
+  
+  // Relations
+  game        Game        @relation(fields: [gameId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+  
+  @@index([gameId, userId])
+}
