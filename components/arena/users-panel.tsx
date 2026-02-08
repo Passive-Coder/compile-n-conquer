@@ -13,39 +13,14 @@ interface User {
   color: string
 }
 
-const initialUsers: User[] = [
-  { id: "1", name: "you", avatar: "Y", status: "coding", rank: 1, rating: 1847, color: "hsl(120 100% 50%)" },
-  { id: "2", name: "n3x_byte", avatar: "N", status: "coding", rank: 2, rating: 2103, color: "hsl(45 100% 50%)" },
-  { id: "3", name: "z3r0_day", avatar: "Z", status: "idle", rank: 3, rating: 1956, color: "hsl(200 100% 50%)" },
-  { id: "4", name: "c0d3_wr4ith", avatar: "C", status: "submitted", rank: 4, rating: 2241, color: "hsl(0 80% 55%)" },
-  { id: "5", name: "algo_gh0st", avatar: "A", status: "coding", rank: 5, rating: 1724, color: "hsl(280 80% 60%)" },
-]
-
 const statusConfig = {
   coding: { label: "CODING", dotClass: "bg-primary animate-pulse" },
   idle: { label: "IDLE", dotClass: "bg-muted-foreground" },
   submitted: { label: "DONE", dotClass: "bg-yellow-400" },
 }
 
-export function UsersPanel() {
-  const [users, setUsers] = useState(initialUsers)
-
-  // Simulate status changes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setUsers((prev) =>
-        prev.map((u) => {
-          if (u.id === "1") return u
-          const r = Math.random()
-          if (r > 0.92) return { ...u, status: "submitted" as const }
-          if (r > 0.85) return { ...u, status: "idle" as const }
-          return { ...u, status: "coding" as const }
-        })
-      )
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
-
+// Controlled by parent, no hardcoded users
+export function UsersPanel({ users }: { users: User[] }) {
   return (
     <div className="flex flex-col rounded-sm border border-border bg-card">
       {/* Header */}
@@ -61,6 +36,9 @@ export function UsersPanel() {
 
       {/* User list */}
       <div className="flex flex-col">
+        {users.length === 0 && (
+          <div className="text-center text-xs text-muted-foreground py-2">No users</div>
+        )}
         {users.map((user) => {
           const sc = statusConfig[user.status]
           return (

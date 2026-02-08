@@ -30,25 +30,22 @@ export default function ArenaPage() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-            <span className="text-xs uppercase tracking-widest text-primary">
-              Live
-            </span>
+            <span className="text-xs uppercase tracking-widest text-primary">Live</span>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Mode: Code from Scratch
-          </span>
+          <span className="text-xs text-muted-foreground">Mode: —</span>
           <Link
             href="/profile"
             className="flex h-7 w-7 items-center justify-center rounded-sm border border-primary/30 bg-primary/10 text-xs font-bold text-primary"
+            aria-label="Profile"
           >
-            Y
+            —
           </Link>
         </div>
       </header>
 
       {/* Progress bar section */}
       <div className="border-b border-border px-4 py-2">
-        <ProgressBar />
+        <ProgressBar players={[]} />
       </div>
 
       {/* Main content area */}
@@ -60,8 +57,8 @@ export default function ArenaPage() {
 
         {/* Right sidebar: Users + Points */}
         <div className="hidden w-72 flex-col gap-2 overflow-auto border-l border-border p-2 xl:flex">
-          <UsersPanel />
-          <PointsPanel />
+          <UsersPanel users={[]} />
+          <PointsPanel questions={[]} rank="#0" time="--:--" xpBonus={0} />
         </div>
       </div>
     </main>

@@ -9,49 +9,6 @@ interface QuestionResult {
   bonuses: string[]
 }
 
-const questions: QuestionResult[] = [
-  {
-    id: 1,
-    title: "Two Sum",
-    status: "solved",
-    points: 150,
-    maxPoints: 150,
-    bonuses: ["First Blood +50", "Clean Code +20"],
-  },
-  {
-    id: 2,
-    title: "Valid Parentheses",
-    status: "solved",
-    points: 120,
-    maxPoints: 150,
-    bonuses: ["Speed +15"],
-  },
-  {
-    id: 3,
-    title: "Merge Intervals",
-    status: "attempted",
-    points: 0,
-    maxPoints: 200,
-    bonuses: [],
-  },
-  {
-    id: 4,
-    title: "LRU Cache",
-    status: "locked",
-    points: 0,
-    maxPoints: 250,
-    bonuses: [],
-  },
-  {
-    id: 5,
-    title: "Binary Tree Paths",
-    status: "locked",
-    points: 0,
-    maxPoints: 200,
-    bonuses: [],
-  },
-]
-
 const statusStyles = {
   solved: "border-primary/30 bg-primary/5 text-primary",
   attempted: "border-yellow-500/30 bg-yellow-500/5 text-yellow-400",
@@ -64,7 +21,17 @@ const statusLabels = {
   locked: "LOCKED",
 }
 
-export function PointsPanel() {
+export function PointsPanel({
+  questions = [],
+  rank = "#0",
+  time = "--:--",
+  xpBonus = 0,
+}: {
+  questions?: QuestionResult[]
+  rank?: string
+  time?: string
+  xpBonus?: number
+}) {
   const totalPoints = questions.reduce((sum, q) => sum + q.points, 0)
   const maxPoints = questions.reduce((sum, q) => sum + q.maxPoints, 0)
 
@@ -84,6 +51,9 @@ export function PointsPanel() {
 
       {/* Question breakdown */}
       <div className="flex flex-col">
+        {questions.length === 0 && (
+          <div className="text-center text-xs text-muted-foreground py-2">No questions</div>
+        )}
         {questions.map((q) => (
           <div
             key={q.id}
@@ -143,14 +113,14 @@ export function PointsPanel() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <Star className="h-3 w-3 text-primary" />
-            <span className="text-xs text-muted-foreground">Rank: #2</span>
+            <span className="text-xs text-muted-foreground">Rank: {rank}</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">12:48</span>
+            <span className="text-xs text-muted-foreground">{time}</span>
           </div>
         </div>
-        <span className="text-xs font-bold text-primary">+85 XP bonus</span>
+        <span className="text-xs font-bold text-primary">+{xpBonus} XP bonus</span>
       </div>
     </div>
   )
