@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-const PISTON_BASE = "/api/piston";
+const PISTON_BASE = "https://k4l8m636-2000.inc1.devtunnels.ms/api/piston";
 
 interface PistonRuntime {
   language: string;
