@@ -29,11 +29,13 @@ export type AggregateMatchPlayer = {
 export type MatchPlayerAvgAggregateOutputType = {
   rank: number | null
   score: number | null
+  xpDelta: number | null
 }
 
 export type MatchPlayerSumAggregateOutputType = {
   rank: number | null
   score: number | null
+  xpDelta: number | null
 }
 
 export type MatchPlayerMinAggregateOutputType = {
@@ -42,6 +44,8 @@ export type MatchPlayerMinAggregateOutputType = {
   userId: string | null
   rank: number | null
   score: number | null
+  result: $Enums.MatchOutcome | null
+  xpDelta: number | null
   joinedAt: Date | null
 }
 
@@ -51,6 +55,8 @@ export type MatchPlayerMaxAggregateOutputType = {
   userId: string | null
   rank: number | null
   score: number | null
+  result: $Enums.MatchOutcome | null
+  xpDelta: number | null
   joinedAt: Date | null
 }
 
@@ -60,6 +66,8 @@ export type MatchPlayerCountAggregateOutputType = {
   userId: number
   rank: number
   score: number
+  result: number
+  xpDelta: number
   joinedAt: number
   _all: number
 }
@@ -68,11 +76,13 @@ export type MatchPlayerCountAggregateOutputType = {
 export type MatchPlayerAvgAggregateInputType = {
   rank?: true
   score?: true
+  xpDelta?: true
 }
 
 export type MatchPlayerSumAggregateInputType = {
   rank?: true
   score?: true
+  xpDelta?: true
 }
 
 export type MatchPlayerMinAggregateInputType = {
@@ -81,6 +91,8 @@ export type MatchPlayerMinAggregateInputType = {
   userId?: true
   rank?: true
   score?: true
+  result?: true
+  xpDelta?: true
   joinedAt?: true
 }
 
@@ -90,6 +102,8 @@ export type MatchPlayerMaxAggregateInputType = {
   userId?: true
   rank?: true
   score?: true
+  result?: true
+  xpDelta?: true
   joinedAt?: true
 }
 
@@ -99,6 +113,8 @@ export type MatchPlayerCountAggregateInputType = {
   userId?: true
   rank?: true
   score?: true
+  result?: true
+  xpDelta?: true
   joinedAt?: true
   _all?: true
 }
@@ -195,6 +211,8 @@ export type MatchPlayerGroupByOutputType = {
   userId: string
   rank: number | null
   score: number | null
+  result: $Enums.MatchOutcome | null
+  xpDelta: number
   joinedAt: Date
   _count: MatchPlayerCountAggregateOutputType | null
   _avg: MatchPlayerAvgAggregateOutputType | null
@@ -227,6 +245,8 @@ export type MatchPlayerWhereInput = {
   userId?: Prisma.StringFilter<"MatchPlayer"> | string
   rank?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
   score?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
+  result?: Prisma.EnumMatchOutcomeNullableFilter<"MatchPlayer"> | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFilter<"MatchPlayer"> | number
   joinedAt?: Prisma.DateTimeFilter<"MatchPlayer"> | Date | string
   match?: Prisma.XOR<Prisma.MatchScalarRelationFilter, Prisma.MatchWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -238,6 +258,8 @@ export type MatchPlayerOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   rank?: Prisma.SortOrderInput | Prisma.SortOrder
   score?: Prisma.SortOrderInput | Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
+  xpDelta?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   match?: Prisma.MatchOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
@@ -253,6 +275,8 @@ export type MatchPlayerWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"MatchPlayer"> | string
   rank?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
   score?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
+  result?: Prisma.EnumMatchOutcomeNullableFilter<"MatchPlayer"> | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFilter<"MatchPlayer"> | number
   joinedAt?: Prisma.DateTimeFilter<"MatchPlayer"> | Date | string
   match?: Prisma.XOR<Prisma.MatchScalarRelationFilter, Prisma.MatchWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -264,6 +288,8 @@ export type MatchPlayerOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   rank?: Prisma.SortOrderInput | Prisma.SortOrder
   score?: Prisma.SortOrderInput | Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
+  xpDelta?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   _count?: Prisma.MatchPlayerCountOrderByAggregateInput
   _avg?: Prisma.MatchPlayerAvgOrderByAggregateInput
@@ -281,6 +307,8 @@ export type MatchPlayerScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"MatchPlayer"> | string
   rank?: Prisma.IntNullableWithAggregatesFilter<"MatchPlayer"> | number | null
   score?: Prisma.FloatNullableWithAggregatesFilter<"MatchPlayer"> | number | null
+  result?: Prisma.EnumMatchOutcomeNullableWithAggregatesFilter<"MatchPlayer"> | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntWithAggregatesFilter<"MatchPlayer"> | number
   joinedAt?: Prisma.DateTimeWithAggregatesFilter<"MatchPlayer"> | Date | string
 }
 
@@ -288,6 +316,8 @@ export type MatchPlayerCreateInput = {
   id?: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
   match: Prisma.MatchCreateNestedOneWithoutPlayersInput
   user: Prisma.UserCreateNestedOneWithoutMatchPlayersInput
@@ -299,6 +329,8 @@ export type MatchPlayerUncheckedCreateInput = {
   userId: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
 }
 
@@ -306,6 +338,8 @@ export type MatchPlayerUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   match?: Prisma.MatchUpdateOneRequiredWithoutPlayersNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMatchPlayersNestedInput
@@ -317,6 +351,8 @@ export type MatchPlayerUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -326,6 +362,8 @@ export type MatchPlayerCreateManyInput = {
   userId: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
 }
 
@@ -333,6 +371,8 @@ export type MatchPlayerUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -342,6 +382,8 @@ export type MatchPlayerUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -366,12 +408,15 @@ export type MatchPlayerCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   rank?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  result?: Prisma.SortOrder
+  xpDelta?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
 }
 
 export type MatchPlayerAvgOrderByAggregateInput = {
   rank?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  xpDelta?: Prisma.SortOrder
 }
 
 export type MatchPlayerMaxOrderByAggregateInput = {
@@ -380,6 +425,8 @@ export type MatchPlayerMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   rank?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  result?: Prisma.SortOrder
+  xpDelta?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
 }
 
@@ -389,12 +436,15 @@ export type MatchPlayerMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   rank?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  result?: Prisma.SortOrder
+  xpDelta?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
 }
 
 export type MatchPlayerSumOrderByAggregateInput = {
   rank?: Prisma.SortOrder
   score?: Prisma.SortOrder
+  xpDelta?: Prisma.SortOrder
 }
 
 export type MatchPlayerCreateNestedManyWithoutUserInput = {
@@ -497,10 +547,16 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableEnumMatchOutcomeFieldUpdateOperationsInput = {
+  set?: $Enums.MatchOutcome | null
+}
+
 export type MatchPlayerCreateWithoutUserInput = {
   id?: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
   match: Prisma.MatchCreateNestedOneWithoutPlayersInput
 }
@@ -510,6 +566,8 @@ export type MatchPlayerUncheckedCreateWithoutUserInput = {
   matchId: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
 }
 
@@ -548,6 +606,8 @@ export type MatchPlayerScalarWhereInput = {
   userId?: Prisma.StringFilter<"MatchPlayer"> | string
   rank?: Prisma.IntNullableFilter<"MatchPlayer"> | number | null
   score?: Prisma.FloatNullableFilter<"MatchPlayer"> | number | null
+  result?: Prisma.EnumMatchOutcomeNullableFilter<"MatchPlayer"> | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFilter<"MatchPlayer"> | number
   joinedAt?: Prisma.DateTimeFilter<"MatchPlayer"> | Date | string
 }
 
@@ -555,6 +615,8 @@ export type MatchPlayerCreateWithoutMatchInput = {
   id?: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutMatchPlayersInput
 }
@@ -564,6 +626,8 @@ export type MatchPlayerUncheckedCreateWithoutMatchInput = {
   userId: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
 }
 
@@ -598,6 +662,8 @@ export type MatchPlayerCreateManyUserInput = {
   matchId: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
 }
 
@@ -605,6 +671,8 @@ export type MatchPlayerUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   match?: Prisma.MatchUpdateOneRequiredWithoutPlayersNestedInput
 }
@@ -614,6 +682,8 @@ export type MatchPlayerUncheckedUpdateWithoutUserInput = {
   matchId?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -622,6 +692,8 @@ export type MatchPlayerUncheckedUpdateManyWithoutUserInput = {
   matchId?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -630,6 +702,8 @@ export type MatchPlayerCreateManyMatchInput = {
   userId: string
   rank?: number | null
   score?: number | null
+  result?: $Enums.MatchOutcome | null
+  xpDelta?: number
   joinedAt?: Date | string
 }
 
@@ -637,6 +711,8 @@ export type MatchPlayerUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutMatchPlayersNestedInput
 }
@@ -646,6 +722,8 @@ export type MatchPlayerUncheckedUpdateWithoutMatchInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -654,6 +732,8 @@ export type MatchPlayerUncheckedUpdateManyWithoutMatchInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   rank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumMatchOutcomeFieldUpdateOperationsInput | $Enums.MatchOutcome | null
+  xpDelta?: Prisma.IntFieldUpdateOperationsInput | number
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -665,6 +745,8 @@ export type MatchPlayerSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   userId?: boolean
   rank?: boolean
   score?: boolean
+  result?: boolean
+  xpDelta?: boolean
   joinedAt?: boolean
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -676,6 +758,8 @@ export type MatchPlayerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   userId?: boolean
   rank?: boolean
   score?: boolean
+  result?: boolean
+  xpDelta?: boolean
   joinedAt?: boolean
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -687,6 +771,8 @@ export type MatchPlayerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   userId?: boolean
   rank?: boolean
   score?: boolean
+  result?: boolean
+  xpDelta?: boolean
   joinedAt?: boolean
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -698,10 +784,12 @@ export type MatchPlayerSelectScalar = {
   userId?: boolean
   rank?: boolean
   score?: boolean
+  result?: boolean
+  xpDelta?: boolean
   joinedAt?: boolean
 }
 
-export type MatchPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matchId" | "userId" | "rank" | "score" | "joinedAt", ExtArgs["result"]["matchPlayer"]>
+export type MatchPlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matchId" | "userId" | "rank" | "score" | "result" | "xpDelta" | "joinedAt", ExtArgs["result"]["matchPlayer"]>
 export type MatchPlayerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -727,6 +815,8 @@ export type $MatchPlayerPayload<ExtArgs extends runtime.Types.Extensions.Interna
     userId: string
     rank: number | null
     score: number | null
+    result: $Enums.MatchOutcome | null
+    xpDelta: number
     joinedAt: Date
   }, ExtArgs["result"]["matchPlayer"]>
   composites: {}
@@ -1158,6 +1248,8 @@ export interface MatchPlayerFieldRefs {
   readonly userId: Prisma.FieldRef<"MatchPlayer", 'String'>
   readonly rank: Prisma.FieldRef<"MatchPlayer", 'Int'>
   readonly score: Prisma.FieldRef<"MatchPlayer", 'Float'>
+  readonly result: Prisma.FieldRef<"MatchPlayer", 'MatchOutcome'>
+  readonly xpDelta: Prisma.FieldRef<"MatchPlayer", 'Int'>
   readonly joinedAt: Prisma.FieldRef<"MatchPlayer", 'DateTime'>
 }
     

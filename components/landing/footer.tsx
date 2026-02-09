@@ -19,7 +19,7 @@ export function Footer() {
             Features
           </Link>
           <Link
-            href="/arena"
+            href="/arena/lobby"
             className="text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-primary"
           >
             Arena

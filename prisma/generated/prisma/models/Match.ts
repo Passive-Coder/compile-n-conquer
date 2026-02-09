@@ -20,12 +20,23 @@ export type MatchModel = runtime.Types.Result.DefaultSelection<Prisma.$MatchPayl
 
 export type AggregateMatch = {
   _count: MatchCountAggregateOutputType | null
+  _avg: MatchAvgAggregateOutputType | null
+  _sum: MatchSumAggregateOutputType | null
   _min: MatchMinAggregateOutputType | null
   _max: MatchMaxAggregateOutputType | null
 }
 
+export type MatchAvgAggregateOutputType = {
+  maxPlayers: number | null
+}
+
+export type MatchSumAggregateOutputType = {
+  maxPlayers: number | null
+}
+
 export type MatchMinAggregateOutputType = {
   id: string | null
+  maxPlayers: number | null
   status: $Enums.MatchStatus | null
   mode: $Enums.GameMode | null
   startedAt: Date | null
@@ -39,6 +50,7 @@ export type MatchMinAggregateOutputType = {
 
 export type MatchMaxAggregateOutputType = {
   id: string | null
+  maxPlayers: number | null
   status: $Enums.MatchStatus | null
   mode: $Enums.GameMode | null
   startedAt: Date | null
@@ -52,6 +64,7 @@ export type MatchMaxAggregateOutputType = {
 
 export type MatchCountAggregateOutputType = {
   id: number
+  maxPlayers: number
   status: number
   mode: number
   startedAt: number
@@ -65,8 +78,17 @@ export type MatchCountAggregateOutputType = {
 }
 
 
+export type MatchAvgAggregateInputType = {
+  maxPlayers?: true
+}
+
+export type MatchSumAggregateInputType = {
+  maxPlayers?: true
+}
+
 export type MatchMinAggregateInputType = {
   id?: true
+  maxPlayers?: true
   status?: true
   mode?: true
   startedAt?: true
@@ -80,6 +102,7 @@ export type MatchMinAggregateInputType = {
 
 export type MatchMaxAggregateInputType = {
   id?: true
+  maxPlayers?: true
   status?: true
   mode?: true
   startedAt?: true
@@ -93,6 +116,7 @@ export type MatchMaxAggregateInputType = {
 
 export type MatchCountAggregateInputType = {
   id?: true
+  maxPlayers?: true
   status?: true
   mode?: true
   startedAt?: true
@@ -143,6 +167,18 @@ export type MatchAggregateArgs<ExtArgs extends runtime.Types.Extensions.Internal
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: MatchAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: MatchSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: MatchMinAggregateInputType
@@ -173,12 +209,15 @@ export type MatchGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   _count?: MatchCountAggregateInputType | true
+  _avg?: MatchAvgAggregateInputType
+  _sum?: MatchSumAggregateInputType
   _min?: MatchMinAggregateInputType
   _max?: MatchMaxAggregateInputType
 }
 
 export type MatchGroupByOutputType = {
   id: string
+  maxPlayers: number
   status: $Enums.MatchStatus
   mode: $Enums.GameMode
   startedAt: Date | null
@@ -189,6 +228,8 @@ export type MatchGroupByOutputType = {
   threadOriginality: string | null
   threadRanking: string | null
   _count: MatchCountAggregateOutputType | null
+  _avg: MatchAvgAggregateOutputType | null
+  _sum: MatchSumAggregateOutputType | null
   _min: MatchMinAggregateOutputType | null
   _max: MatchMaxAggregateOutputType | null
 }
@@ -213,6 +254,7 @@ export type MatchWhereInput = {
   OR?: Prisma.MatchWhereInput[]
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   id?: Prisma.StringFilter<"Match"> | string
+  maxPlayers?: Prisma.IntFilter<"Match"> | number
   status?: Prisma.EnumMatchStatusFilter<"Match"> | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFilter<"Match"> | $Enums.GameMode
   startedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
@@ -229,6 +271,7 @@ export type MatchWhereInput = {
 
 export type MatchOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  maxPlayers?: Prisma.SortOrder
   status?: Prisma.SortOrder
   mode?: Prisma.SortOrder
   startedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -248,6 +291,7 @@ export type MatchWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
   OR?: Prisma.MatchWhereInput[]
   NOT?: Prisma.MatchWhereInput | Prisma.MatchWhereInput[]
+  maxPlayers?: Prisma.IntFilter<"Match"> | number
   status?: Prisma.EnumMatchStatusFilter<"Match"> | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFilter<"Match"> | $Enums.GameMode
   startedAt?: Prisma.DateTimeNullableFilter<"Match"> | Date | string | null
@@ -264,6 +308,7 @@ export type MatchWhereUniqueInput = Prisma.AtLeast<{
 
 export type MatchOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  maxPlayers?: Prisma.SortOrder
   status?: Prisma.SortOrder
   mode?: Prisma.SortOrder
   startedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -274,8 +319,10 @@ export type MatchOrderByWithAggregationInput = {
   threadOriginality?: Prisma.SortOrderInput | Prisma.SortOrder
   threadRanking?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MatchCountOrderByAggregateInput
+  _avg?: Prisma.MatchAvgOrderByAggregateInput
   _max?: Prisma.MatchMaxOrderByAggregateInput
   _min?: Prisma.MatchMinOrderByAggregateInput
+  _sum?: Prisma.MatchSumOrderByAggregateInput
 }
 
 export type MatchScalarWhereWithAggregatesInput = {
@@ -283,6 +330,7 @@ export type MatchScalarWhereWithAggregatesInput = {
   OR?: Prisma.MatchScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MatchScalarWhereWithAggregatesInput | Prisma.MatchScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Match"> | string
+  maxPlayers?: Prisma.IntWithAggregatesFilter<"Match"> | number
   status?: Prisma.EnumMatchStatusWithAggregatesFilter<"Match"> | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeWithAggregatesFilter<"Match"> | $Enums.GameMode
   startedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Match"> | Date | string | null
@@ -296,6 +344,7 @@ export type MatchScalarWhereWithAggregatesInput = {
 
 export type MatchCreateInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -312,6 +361,7 @@ export type MatchCreateInput = {
 
 export type MatchUncheckedCreateInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -328,6 +378,7 @@ export type MatchUncheckedCreateInput = {
 
 export type MatchUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -344,6 +395,7 @@ export type MatchUpdateInput = {
 
 export type MatchUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -360,6 +412,7 @@ export type MatchUncheckedUpdateInput = {
 
 export type MatchCreateManyInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -373,6 +426,7 @@ export type MatchCreateManyInput = {
 
 export type MatchUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -386,6 +440,7 @@ export type MatchUpdateManyMutationInput = {
 
 export type MatchUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -399,6 +454,7 @@ export type MatchUncheckedUpdateManyInput = {
 
 export type MatchCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  maxPlayers?: Prisma.SortOrder
   status?: Prisma.SortOrder
   mode?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
@@ -410,8 +466,13 @@ export type MatchCountOrderByAggregateInput = {
   threadRanking?: Prisma.SortOrder
 }
 
+export type MatchAvgOrderByAggregateInput = {
+  maxPlayers?: Prisma.SortOrder
+}
+
 export type MatchMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  maxPlayers?: Prisma.SortOrder
   status?: Prisma.SortOrder
   mode?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
@@ -425,6 +486,7 @@ export type MatchMaxOrderByAggregateInput = {
 
 export type MatchMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  maxPlayers?: Prisma.SortOrder
   status?: Prisma.SortOrder
   mode?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
@@ -434,6 +496,10 @@ export type MatchMinOrderByAggregateInput = {
   threadSpaceComplexity?: Prisma.SortOrder
   threadOriginality?: Prisma.SortOrder
   threadRanking?: Prisma.SortOrder
+}
+
+export type MatchSumOrderByAggregateInput = {
+  maxPlayers?: Prisma.SortOrder
 }
 
 export type MatchScalarRelationFilter = {
@@ -497,6 +563,7 @@ export type MatchUpdateOneRequiredWithoutSubmissionsNestedInput = {
 
 export type MatchCreateWithoutPlayersInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -512,6 +579,7 @@ export type MatchCreateWithoutPlayersInput = {
 
 export type MatchUncheckedCreateWithoutPlayersInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -543,6 +611,7 @@ export type MatchUpdateToOneWithWhereWithoutPlayersInput = {
 
 export type MatchUpdateWithoutPlayersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -558,6 +627,7 @@ export type MatchUpdateWithoutPlayersInput = {
 
 export type MatchUncheckedUpdateWithoutPlayersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -573,6 +643,7 @@ export type MatchUncheckedUpdateWithoutPlayersInput = {
 
 export type MatchCreateWithoutQuestionsInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -588,6 +659,7 @@ export type MatchCreateWithoutQuestionsInput = {
 
 export type MatchUncheckedCreateWithoutQuestionsInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -619,6 +691,7 @@ export type MatchUpdateToOneWithWhereWithoutQuestionsInput = {
 
 export type MatchUpdateWithoutQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -634,6 +707,7 @@ export type MatchUpdateWithoutQuestionsInput = {
 
 export type MatchUncheckedUpdateWithoutQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -649,6 +723,7 @@ export type MatchUncheckedUpdateWithoutQuestionsInput = {
 
 export type MatchCreateWithoutSubmissionsInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -664,6 +739,7 @@ export type MatchCreateWithoutSubmissionsInput = {
 
 export type MatchUncheckedCreateWithoutSubmissionsInput = {
   id?: string
+  maxPlayers?: number
   status?: $Enums.MatchStatus
   mode?: $Enums.GameMode
   startedAt?: Date | string | null
@@ -695,6 +771,7 @@ export type MatchUpdateToOneWithWhereWithoutSubmissionsInput = {
 
 export type MatchUpdateWithoutSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -710,6 +787,7 @@ export type MatchUpdateWithoutSubmissionsInput = {
 
 export type MatchUncheckedUpdateWithoutSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  maxPlayers?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
   mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -774,6 +852,7 @@ export type MatchCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Typ
 
 export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  maxPlayers?: boolean
   status?: boolean
   mode?: boolean
   startedAt?: boolean
@@ -791,6 +870,7 @@ export type MatchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 
 export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  maxPlayers?: boolean
   status?: boolean
   mode?: boolean
   startedAt?: boolean
@@ -804,6 +884,7 @@ export type MatchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  maxPlayers?: boolean
   status?: boolean
   mode?: boolean
   startedAt?: boolean
@@ -817,6 +898,7 @@ export type MatchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type MatchSelectScalar = {
   id?: boolean
+  maxPlayers?: boolean
   status?: boolean
   mode?: boolean
   startedAt?: boolean
@@ -828,7 +910,7 @@ export type MatchSelectScalar = {
   threadRanking?: boolean
 }
 
-export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "mode" | "startedAt" | "endedAt" | "createdAt" | "threadTimeComplexity" | "threadSpaceComplexity" | "threadOriginality" | "threadRanking", ExtArgs["result"]["match"]>
+export type MatchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "maxPlayers" | "status" | "mode" | "startedAt" | "endedAt" | "createdAt" | "threadTimeComplexity" | "threadSpaceComplexity" | "threadOriginality" | "threadRanking", ExtArgs["result"]["match"]>
 export type MatchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   players?: boolean | Prisma.Match$playersArgs<ExtArgs>
   questions?: boolean | Prisma.Match$questionsArgs<ExtArgs>
@@ -847,6 +929,7 @@ export type $MatchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    maxPlayers: number
     status: $Enums.MatchStatus
     mode: $Enums.GameMode
     startedAt: Date | null
@@ -1283,6 +1366,7 @@ export interface Prisma__MatchClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface MatchFieldRefs {
   readonly id: Prisma.FieldRef<"Match", 'String'>
+  readonly maxPlayers: Prisma.FieldRef<"Match", 'Int'>
   readonly status: Prisma.FieldRef<"Match", 'MatchStatus'>
   readonly mode: Prisma.FieldRef<"Match", 'GameMode'>
   readonly startedAt: Prisma.FieldRef<"Match", 'DateTime'>

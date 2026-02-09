@@ -40,6 +40,15 @@ export const GameMode = {
 export type GameMode = (typeof GameMode)[keyof typeof GameMode]
 
 
+export const MatchOutcome = {
+  WIN: 'WIN',
+  LOSS: 'LOSS',
+  DRAW: 'DRAW'
+} as const
+
+export type MatchOutcome = (typeof MatchOutcome)[keyof typeof MatchOutcome]
+
+
 export const Difficulty = {
   EASY: 'EASY',
   MEDIUM: 'MEDIUM',

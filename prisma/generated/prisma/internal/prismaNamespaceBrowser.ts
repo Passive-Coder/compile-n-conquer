@@ -83,10 +83,13 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   displayName: 'displayName',
   avatarUrl: 'avatarUrl',
+  title: 'title',
   skillTier: 'skillTier',
   elo: 'elo',
   totalWins: 'totalWins',
   totalMatches: 'totalMatches',
+  totalXP: 'totalXP',
+  streak: 'streak',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -106,6 +109,7 @@ export type QueueEntryScalarFieldEnum = (typeof QueueEntryScalarFieldEnum)[keyof
 
 export const MatchScalarFieldEnum = {
   id: 'id',
+  maxPlayers: 'maxPlayers',
   status: 'status',
   mode: 'mode',
   startedAt: 'startedAt',
@@ -126,6 +130,8 @@ export const MatchPlayerScalarFieldEnum = {
   userId: 'userId',
   rank: 'rank',
   score: 'score',
+  result: 'result',
+  xpDelta: 'xpDelta',
   joinedAt: 'joinedAt'
 } as const
 

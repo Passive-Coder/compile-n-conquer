@@ -20,11 +20,31 @@ const initialPlayers: Player[] = [
   { id: "5", name: "algo_gh0st", avatar: "A", progress: 28, solved: 1, total: 5, color: "hsl(280 80% 60%)" },
 ]
 
-export function ProgressBar() {
-  const [players, setPlayers] = useState(initialPlayers)
+type ProgressBarProps = {
+  players?: Player[]
+  roundLabel?: string
+  timerLabel?: string
+}
+
+export function ProgressBar({ players: playersProp, roundLabel, timerLabel }: ProgressBarProps) {
+  const hasProvidedPlayers = Boolean(playersProp && playersProp.length > 0)
+  const [players, setPlayers] = useState<Player[]>(
+    hasProvidedPlayers ? (playersProp as Player[]) : initialPlayers,
+  )
+  const resolvedRoundLabel = roundLabel || "Round 1 / 5"
+  const resolvedTimerLabel = timerLabel || "04:32"
+
+  useEffect(() => {
+    if (hasProvidedPlayers) {
+      setPlayers(playersProp as Player[])
+      return
+    }
+    setPlayers(initialPlayers)
+  }, [hasProvidedPlayers, playersProp])
 
   // Simulate live progress updates
   useEffect(() => {
+    if (hasProvidedPlayers) return
     const interval = setInterval(() => {
       setPlayers((prev) =>
         prev.map((p) => ({
@@ -49,8 +69,8 @@ export function ProgressBar() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">{"Round 1 / 5"}</span>
-          <span className="text-xs text-muted-foreground">{"04:32"}</span>
+          <span className="text-xs text-muted-foreground">{resolvedRoundLabel}</span>
+          <span className="text-xs text-muted-foreground">{resolvedTimerLabel}</span>
         </div>
       </div>
 

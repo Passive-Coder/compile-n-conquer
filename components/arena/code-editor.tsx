@@ -1,7 +1,70 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Play, RotateCcw, Send, ChevronDown } from "lucide-react"
+import dynamic from "next/dynamic"
+
+const MonacoEditor = dynamic(
+  () => import("@monaco-editor/react").then((mod) => mod.default),
+  { ssr: false },
+)
+
+const PISTON_BASE = "https://emkc.org/api/v2/piston"
+
+interface PistonRuntime {
+  language: string
+  version: string
+  aliases: string[]
+  runtime?: string
+}
+
+interface PistonStageResult {
+  stdout: string
+  stderr: string
+  output: string
+  code: number | null
+  signal: string | null
+}
+
+interface PistonExecuteResponse {
+  language: string
+  version: string
+  run: PistonStageResult
+  compile?: PistonStageResult
+}
+
+const jsonGuard = async <T,>(res: Response): Promise<T> => {
+  const contentType = res.headers.get("content-type") ?? ""
+  const text = await res.text()
+
+  if (!res.ok) {
+    throw new Error(
+      `Piston returned ${res.status}. ${text.slice(0, 160) || "Empty body"}`,
+    )
+  }
+
+  if (!contentType.toLowerCase().includes("application/json")) {
+    throw new Error(
+      `Piston responded with non-JSON (content-type: ${contentType || "unknown"}). Body starts with: ${text
+        .replace(/\s+/g, " ")
+        .slice(0, 160)}`,
+    )
+  }
+
+  try {
+    return JSON.parse(text) as T
+  } catch (err) {
+    throw new Error(
+      `Failed to parse Piston JSON: ${(err as Error).message}. Body starts with: ${text
+        .replace(/\s+/g, " ")
+        .slice(0, 160)}`,
+    )
+  }
+}
+
+const baseHeaders = {
+  Accept: "application/json",
+}
 
 const defaultCode = `def two_sum(nums, target):
     """
@@ -21,6 +84,83 @@ const defaultCode = `def two_sum(nums, target):
 print(two_sum([2, 7, 11, 15], 9))
 `
 
+const starterSnippets: Record<string, string> = {
+  python: defaultCode,
+  javascript: 'console.log("Hello, Piston!");',
+  java: `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, Piston!");
+    }
+}`,
+  "c++": `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    cout << "Hello, Piston!" << "\\n";
+    return 0;
+}`,
+}
+
+const normalizeLanguage = (language: string) => language.trim().toLowerCase()
+
+const snippetForLanguage = (language: string) => {
+  const key = normalizeLanguage(language)
+  if (key.includes("python")) return starterSnippets.python
+  if (key.includes("javascript") || key === "js" || key.includes("node")) {
+    return starterSnippets.javascript
+  }
+  if (key === "java") return starterSnippets.java
+  if (key.includes("c++") || key.includes("cpp")) return starterSnippets["c++"]
+  return undefined
+}
+
+const fileNameForLanguage = (language: string) => {
+  const key = normalizeLanguage(language)
+  if (key.includes("python")) return "main.py"
+  if (key.includes("javascript") || key === "js" || key.includes("node")) {
+    return "main.js"
+  }
+  if (key === "java") return "Main.java"
+  if (key.includes("c++") || key.includes("cpp")) return "main.cpp"
+  return undefined
+}
+
+const matchesLanguage = (runtime: PistonRuntime, selection: string) => {
+  const target = normalizeLanguage(selection)
+  const runtimeName = normalizeLanguage(runtime.language)
+  const aliases = runtime.aliases?.map(normalizeLanguage) ?? []
+
+  if (target === "c++") {
+    return (
+      runtimeName.includes("c++") ||
+      runtimeName.includes("cpp") ||
+      aliases.includes("c++") ||
+      aliases.includes("cpp")
+    )
+  }
+  if (target === "javascript") {
+    return (
+      runtimeName.includes("javascript") ||
+      runtimeName.includes("node") ||
+      aliases.includes("javascript") ||
+      aliases.includes("node")
+    )
+  }
+  return runtimeName === target || aliases.includes(target)
+}
+
+const outputFromResult = (result: PistonExecuteResponse) => {
+  const compileOutput = result.compile?.output?.trim()
+  if (compileOutput) return compileOutput
+
+  const runOutput = result.run.output?.trim()
+  if (runOutput) return runOutput
+
+  if (result.run.stderr) return result.run.stderr
+  if (result.run.stdout) return result.run.stdout
+  return "No output produced."
+}
+
 const problemStatement = {
   title: "Two Sum",
   difficulty: "Easy",
@@ -38,21 +178,139 @@ const problemStatement = {
   ],
 }
 
-export function CodeEditor() {
+type CodeEditorProblem = {
+  title: string
+  difficulty?: string
+  tag?: string
+  description: string
+  examples?: { input: string; output: string }[]
+  constraints?: string[]
+}
+
+type CodeEditorProps = {
+  problem?: CodeEditorProblem
+}
+
+export function CodeEditor({ problem }: CodeEditorProps) {
   const [code, setCode] = useState(defaultCode)
   const [activeTab, setActiveTab] = useState<"problem" | "output">("problem")
   const [language, setLanguage] = useState("python")
   const [showLangDropdown, setShowLangDropdown] = useState(false)
   const [output, setOutput] = useState("")
+  const [runtimes, setRuntimes] = useState<PistonRuntime[]>([])
+  const [runtimeError, setRuntimeError] = useState<string | null>(null)
+  const [isLoadingRuntimes, setIsLoadingRuntimes] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
+  const activeProblem = problem ?? problemStatement
+  const problemTag = activeProblem.tag ?? problemStatement.tag
+  const problemDifficulty =
+    activeProblem.difficulty ?? problemStatement.difficulty
 
-  const handleRun = () => {
+  const handleEditorWillMount = (monaco: any) => {
+    monaco.editor.defineTheme("black-green", {
+      base: "vs-dark",
+      inherit: false,
+      semanticHighlighting: false,
+      rules: [
+        { token: "", foreground: "FFFFFF", background: "000000" },
+        { token: "comment", foreground: "FFFFFF" },
+        { token: "string", foreground: "FFFFFF" },
+        { token: "number", foreground: "FFFFFF" },
+        { token: "keyword", foreground: "FFFFFF" },
+        { token: "identifier", foreground: "FFFFFF" },
+        { token: "delimiter", foreground: "FFFFFF" },
+        { token: "type", foreground: "FFFFFF" },
+        { token: "function", foreground: "FFFFFF" },
+      ],
+      colors: {
+        "editor.background": "#000000",
+        "editor.foreground": "#FFFFFF",
+        "editorLineNumber.foreground": "#5AAA5A",
+        "editorCursor.foreground": "#FFFFFF",
+        "editor.selectionBackground": "#0B2A0B",
+        "editor.inactiveSelectionBackground": "#082008",
+        "editor.lineHighlightBackground": "#081B08",
+        "editorIndentGuide.background": "#123312",
+        "editorIndentGuide.activeBackground": "#39FF14",
+      },
+    })
+  }
+
+  const selectedRuntime = useMemo(() => {
+    return runtimes.find((runtime) => matchesLanguage(runtime, language)) ?? null
+  }, [language, runtimes])
+
+  useEffect(() => {
+    let isActive = true
+
+    const loadRuntimes = async () => {
+      setIsLoadingRuntimes(true)
+      setRuntimeError(null)
+      try {
+        const response = await fetch(`${PISTON_BASE}/runtimes`, {
+          cache: "no-store",
+          headers: baseHeaders,
+        })
+        const data = await jsonGuard<PistonRuntime[]>(response)
+        if (!isActive) return
+        setRuntimes(data)
+      } catch (err: unknown) {
+        if (!isActive) return
+        const message = err instanceof Error ? err.message : "Failed to load runtimes."
+        setRuntimeError(message)
+        setRuntimes([])
+      } finally {
+        if (isActive) setIsLoadingRuntimes(false)
+      }
+    }
+
+    loadRuntimes()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
+
+  const handleRun = async () => {
     setActiveTab("output")
     setOutput("Running...\n")
-    setTimeout(() => {
-      setOutput(
-        `$ python solution.py\n[0, 1]\n\n---\nTest Case 1: PASSED\nTest Case 2: PASSED\nTest Case 3: PASSED\n\nAll test cases passed.\nExecution time: 4ms\nMemory: 14.2 MB`
-      )
-    }, 1200)
+    setIsRunning(true)
+
+    if (!selectedRuntime) {
+      setOutput("No runtime available for the selected language.")
+      setIsRunning(false)
+      return
+    }
+
+    try {
+      const fileName = fileNameForLanguage(language)
+      const submissionRes = await fetch(`${PISTON_BASE}/execute`, {
+        method: "POST",
+        headers: {
+          ...baseHeaders,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          language: selectedRuntime.language,
+          version: selectedRuntime.version,
+          files: [
+            {
+              ...(fileName ? { name: fileName } : {}),
+              content: code,
+            },
+          ],
+          stdin: "",
+        }),
+      })
+
+      const execution = await jsonGuard<PistonExecuteResponse>(submissionRes)
+      setOutput(outputFromResult(execution))
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to run code."
+      setOutput(`Error: ${message}`)
+    } finally {
+      setIsRunning(false)
+    }
   }
 
   const handleSubmit = () => {
@@ -98,22 +356,27 @@ export function CodeEditor() {
           {activeTab === "problem" ? (
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <span className="text-xs text-primary">{problemStatement.tag}</span>
+                <span className="text-xs text-primary">{problemTag}</span>
                 <h2 className="text-lg font-bold text-foreground">
-                  {problemStatement.title}
+                  {activeProblem.title}
                 </h2>
-                <span className="rounded-sm border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs text-primary">
-                  {problemStatement.difficulty}
-                </span>
+                {problemDifficulty && (
+                  <span className="rounded-sm border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                    {problemDifficulty}
+                  </span>
+                )}
               </div>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {problemStatement.description}
+                {activeProblem.description}
               </p>
               <div className="flex flex-col gap-3">
                 <span className="text-xs uppercase tracking-widest text-primary">
                   {"Examples"}
                 </span>
-                {problemStatement.examples.map((ex, i) => (
+                {(activeProblem.examples && activeProblem.examples.length > 0
+                  ? activeProblem.examples
+                  : problemStatement.examples
+                ).map((ex, i) => (
                   <div
                     key={i}
                     className="rounded-sm border border-border bg-secondary/50 p-3"
@@ -129,19 +392,22 @@ export function CodeEditor() {
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col gap-2">
-                <span className="text-xs uppercase tracking-widest text-primary">
-                  {"Constraints"}
-                </span>
-                <ul className="flex flex-col gap-1">
-                  {problemStatement.constraints.map((c) => (
-                    <li key={c} className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="text-primary">{">"}</span>
-                      {c}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {activeProblem.constraints &&
+                activeProblem.constraints.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-xs uppercase tracking-widest text-primary">
+                      {"Constraints"}
+                    </span>
+                    <ul className="flex flex-col gap-1">
+                      {activeProblem.constraints.map((c) => (
+                        <li key={c} className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span className="text-primary">{">"}</span>
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
             </div>
           ) : (
             <pre className="whitespace-pre-wrap text-xs leading-relaxed text-foreground">
@@ -155,7 +421,7 @@ export function CodeEditor() {
       <div className="flex flex-1 flex-col">
         {/* Toolbar */}
         <div className="flex items-center justify-between border-b border-border px-4 py-2">
-          <div className="relative">
+          <div className="relative flex flex-col">
             <button
               onClick={() => setShowLangDropdown(!showLangDropdown)}
               className="flex items-center gap-1 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground"
@@ -169,6 +435,14 @@ export function CodeEditor() {
                   <button
                     key={lang}
                     onClick={() => {
+                      const nextSnippet = snippetForLanguage(lang)
+                      const currentSnippet = snippetForLanguage(language)
+                      if (
+                        nextSnippet &&
+                        (code.trim() === "" || code === currentSnippet)
+                      ) {
+                        setCode(nextSnippet)
+                      }
                       setLanguage(lang)
                       setShowLangDropdown(false)
                     }}
@@ -181,10 +455,22 @@ export function CodeEditor() {
                 ))}
               </div>
             )}
+            {runtimeError && (
+              <span className="mt-1 text-[10px] text-destructive">
+                {runtimeError}
+              </span>
+            )}
+            {!runtimeError && isLoadingRuntimes && (
+              <span className="mt-1 text-[10px] text-muted-foreground">
+                Loading runtimes...
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setCode(defaultCode)}
+              onClick={() => {
+                setCode(snippetForLanguage(language) ?? defaultCode)
+              }}
               className="rounded-sm border border-border p-1.5 text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
               aria-label="Reset code"
             >
@@ -192,10 +478,11 @@ export function CodeEditor() {
             </button>
             <button
               onClick={handleRun}
+              disabled={isRunning || isLoadingRuntimes}
               className="flex items-center gap-1.5 rounded-sm border border-border bg-secondary px-3 py-1.5 text-xs uppercase tracking-widest text-foreground transition-all hover:border-primary/50"
             >
               <Play className="h-3 w-3 text-primary" />
-              Run
+              {isRunning ? "Running" : "Run"}
             </button>
             <button
               onClick={handleSubmit}
@@ -207,29 +494,23 @@ export function CodeEditor() {
           </div>
         </div>
 
-        {/* Line numbers + textarea */}
-        <div className="relative flex flex-1 overflow-auto">
-          {/* Line numbers */}
-          <div className="flex flex-col border-r border-border bg-secondary/30 px-3 py-3 text-right">
-            {code.split("\n").map((_, i) => (
-              <span
-                key={i}
-                className="text-xs leading-5 text-muted-foreground/50"
-              >
-                {i + 1}
-              </span>
-            ))}
-          </div>
-
-          {/* Code area */}
-          <textarea
+        {/* Monaco Code Editor */}
+        <div className="flex-1 min-h-0">
+          <MonacoEditor
+            height="100%"
+            defaultLanguage={language === "c++" ? "cpp" : language}
+            language={language === "c++" ? "cpp" : language}
             value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className="flex-1 resize-none bg-transparent p-3 text-xs leading-5 text-foreground caret-primary focus:outline-none"
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
+            onChange={(value) => setCode(value || "")}
+            theme="black-green"
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              wordWrap: "on",
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+            }}
+            beforeMount={handleEditorWillMount}
           />
         </div>
 

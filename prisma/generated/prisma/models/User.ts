@@ -30,12 +30,16 @@ export type UserAvgAggregateOutputType = {
   elo: number | null
   totalWins: number | null
   totalMatches: number | null
+  totalXP: number | null
+  streak: number | null
 }
 
 export type UserSumAggregateOutputType = {
   elo: number | null
   totalWins: number | null
   totalMatches: number | null
+  totalXP: number | null
+  streak: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -45,10 +49,13 @@ export type UserMinAggregateOutputType = {
   passwordHash: string | null
   displayName: string | null
   avatarUrl: string | null
+  title: string | null
   skillTier: $Enums.SkillTier | null
   elo: number | null
   totalWins: number | null
   totalMatches: number | null
+  totalXP: number | null
+  streak: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,10 +67,13 @@ export type UserMaxAggregateOutputType = {
   passwordHash: string | null
   displayName: string | null
   avatarUrl: string | null
+  title: string | null
   skillTier: $Enums.SkillTier | null
   elo: number | null
   totalWins: number | null
   totalMatches: number | null
+  totalXP: number | null
+  streak: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,10 +85,13 @@ export type UserCountAggregateOutputType = {
   passwordHash: number
   displayName: number
   avatarUrl: number
+  title: number
   skillTier: number
   elo: number
   totalWins: number
   totalMatches: number
+  totalXP: number
+  streak: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -89,12 +102,16 @@ export type UserAvgAggregateInputType = {
   elo?: true
   totalWins?: true
   totalMatches?: true
+  totalXP?: true
+  streak?: true
 }
 
 export type UserSumAggregateInputType = {
   elo?: true
   totalWins?: true
   totalMatches?: true
+  totalXP?: true
+  streak?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -104,10 +121,13 @@ export type UserMinAggregateInputType = {
   passwordHash?: true
   displayName?: true
   avatarUrl?: true
+  title?: true
   skillTier?: true
   elo?: true
   totalWins?: true
   totalMatches?: true
+  totalXP?: true
+  streak?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -119,10 +139,13 @@ export type UserMaxAggregateInputType = {
   passwordHash?: true
   displayName?: true
   avatarUrl?: true
+  title?: true
   skillTier?: true
   elo?: true
   totalWins?: true
   totalMatches?: true
+  totalXP?: true
+  streak?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -134,10 +157,13 @@ export type UserCountAggregateInputType = {
   passwordHash?: true
   displayName?: true
   avatarUrl?: true
+  title?: true
   skillTier?: true
   elo?: true
   totalWins?: true
   totalMatches?: true
+  totalXP?: true
+  streak?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -236,10 +262,13 @@ export type UserGroupByOutputType = {
   passwordHash: string
   displayName: string | null
   avatarUrl: string | null
+  title: string
   skillTier: $Enums.SkillTier
   elo: number
   totalWins: number
   totalMatches: number
+  totalXP: number
+  streak: number
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -274,10 +303,13 @@ export type UserWhereInput = {
   passwordHash?: Prisma.StringFilter<"User"> | string
   displayName?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  title?: Prisma.StringFilter<"User"> | string
   skillTier?: Prisma.EnumSkillTierFilter<"User"> | $Enums.SkillTier
   elo?: Prisma.IntFilter<"User"> | number
   totalWins?: Prisma.IntFilter<"User"> | number
   totalMatches?: Prisma.IntFilter<"User"> | number
+  totalXP?: Prisma.IntFilter<"User"> | number
+  streak?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   submissions?: Prisma.SubmissionListRelationFilter
@@ -292,10 +324,13 @@ export type UserOrderByWithRelationInput = {
   passwordHash?: Prisma.SortOrder
   displayName?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrder
   skillTier?: Prisma.SortOrder
   elo?: Prisma.SortOrder
   totalWins?: Prisma.SortOrder
   totalMatches?: Prisma.SortOrder
+  totalXP?: Prisma.SortOrder
+  streak?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   submissions?: Prisma.SubmissionOrderByRelationAggregateInput
@@ -313,10 +348,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   passwordHash?: Prisma.StringFilter<"User"> | string
   displayName?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  title?: Prisma.StringFilter<"User"> | string
   skillTier?: Prisma.EnumSkillTierFilter<"User"> | $Enums.SkillTier
   elo?: Prisma.IntFilter<"User"> | number
   totalWins?: Prisma.IntFilter<"User"> | number
   totalMatches?: Prisma.IntFilter<"User"> | number
+  totalXP?: Prisma.IntFilter<"User"> | number
+  streak?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   submissions?: Prisma.SubmissionListRelationFilter
@@ -331,10 +369,13 @@ export type UserOrderByWithAggregationInput = {
   passwordHash?: Prisma.SortOrder
   displayName?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrder
   skillTier?: Prisma.SortOrder
   elo?: Prisma.SortOrder
   totalWins?: Prisma.SortOrder
   totalMatches?: Prisma.SortOrder
+  totalXP?: Prisma.SortOrder
+  streak?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -354,10 +395,13 @@ export type UserScalarWhereWithAggregatesInput = {
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   displayName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  title?: Prisma.StringWithAggregatesFilter<"User"> | string
   skillTier?: Prisma.EnumSkillTierWithAggregatesFilter<"User"> | $Enums.SkillTier
   elo?: Prisma.IntWithAggregatesFilter<"User"> | number
   totalWins?: Prisma.IntWithAggregatesFilter<"User"> | number
   totalMatches?: Prisma.IntWithAggregatesFilter<"User"> | number
+  totalXP?: Prisma.IntWithAggregatesFilter<"User"> | number
+  streak?: Prisma.IntWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -369,10 +413,13 @@ export type UserCreateInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.SubmissionCreateNestedManyWithoutUserInput
@@ -387,10 +434,13 @@ export type UserUncheckedCreateInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
@@ -405,10 +455,13 @@ export type UserUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
@@ -423,10 +476,13 @@ export type UserUncheckedUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
@@ -441,10 +497,13 @@ export type UserCreateManyInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -456,10 +515,13 @@ export type UserUpdateManyMutationInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -471,10 +533,13 @@ export type UserUncheckedUpdateManyInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -486,10 +551,13 @@ export type UserCountOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   skillTier?: Prisma.SortOrder
   elo?: Prisma.SortOrder
   totalWins?: Prisma.SortOrder
   totalMatches?: Prisma.SortOrder
+  totalXP?: Prisma.SortOrder
+  streak?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -498,6 +566,8 @@ export type UserAvgOrderByAggregateInput = {
   elo?: Prisma.SortOrder
   totalWins?: Prisma.SortOrder
   totalMatches?: Prisma.SortOrder
+  totalXP?: Prisma.SortOrder
+  streak?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -507,10 +577,13 @@ export type UserMaxOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   skillTier?: Prisma.SortOrder
   elo?: Prisma.SortOrder
   totalWins?: Prisma.SortOrder
   totalMatches?: Prisma.SortOrder
+  totalXP?: Prisma.SortOrder
+  streak?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -522,10 +595,13 @@ export type UserMinOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   skillTier?: Prisma.SortOrder
   elo?: Prisma.SortOrder
   totalWins?: Prisma.SortOrder
   totalMatches?: Prisma.SortOrder
+  totalXP?: Prisma.SortOrder
+  streak?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -534,6 +610,8 @@ export type UserSumOrderByAggregateInput = {
   elo?: Prisma.SortOrder
   totalWins?: Prisma.SortOrder
   totalMatches?: Prisma.SortOrder
+  totalXP?: Prisma.SortOrder
+  streak?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -614,10 +692,13 @@ export type UserCreateWithoutQueueEntriesInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.SubmissionCreateNestedManyWithoutUserInput
@@ -631,10 +712,13 @@ export type UserUncheckedCreateWithoutQueueEntriesInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
@@ -664,10 +748,13 @@ export type UserUpdateWithoutQueueEntriesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
@@ -681,10 +768,13 @@ export type UserUncheckedUpdateWithoutQueueEntriesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
@@ -698,10 +788,13 @@ export type UserCreateWithoutMatchPlayersInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.SubmissionCreateNestedManyWithoutUserInput
@@ -715,10 +808,13 @@ export type UserUncheckedCreateWithoutMatchPlayersInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
@@ -748,10 +844,13 @@ export type UserUpdateWithoutMatchPlayersInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
@@ -765,10 +864,13 @@ export type UserUncheckedUpdateWithoutMatchPlayersInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
@@ -782,10 +884,13 @@ export type UserCreateWithoutSubmissionsInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutUserInput
@@ -799,10 +904,13 @@ export type UserUncheckedCreateWithoutSubmissionsInput = {
   passwordHash: string
   displayName?: string | null
   avatarUrl?: string | null
+  title?: string
   skillTier?: $Enums.SkillTier
   elo?: number
   totalWins?: number
   totalMatches?: number
+  totalXP?: number
+  streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutUserInput
@@ -832,10 +940,13 @@ export type UserUpdateWithoutSubmissionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutUserNestedInput
@@ -849,10 +960,13 @@ export type UserUncheckedUpdateWithoutSubmissionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
   elo?: Prisma.IntFieldUpdateOperationsInput | number
   totalWins?: Prisma.IntFieldUpdateOperationsInput | number
   totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
+  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutUserNestedInput
@@ -915,10 +1029,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordHash?: boolean
   displayName?: boolean
   avatarUrl?: boolean
+  title?: boolean
   skillTier?: boolean
   elo?: boolean
   totalWins?: boolean
   totalMatches?: boolean
+  totalXP?: boolean
+  streak?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   submissions?: boolean | Prisma.User$submissionsArgs<ExtArgs>
@@ -934,10 +1051,13 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   displayName?: boolean
   avatarUrl?: boolean
+  title?: boolean
   skillTier?: boolean
   elo?: boolean
   totalWins?: boolean
   totalMatches?: boolean
+  totalXP?: boolean
+  streak?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -949,10 +1069,13 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   displayName?: boolean
   avatarUrl?: boolean
+  title?: boolean
   skillTier?: boolean
   elo?: boolean
   totalWins?: boolean
   totalMatches?: boolean
+  totalXP?: boolean
+  streak?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -964,15 +1087,18 @@ export type UserSelectScalar = {
   passwordHash?: boolean
   displayName?: boolean
   avatarUrl?: boolean
+  title?: boolean
   skillTier?: boolean
   elo?: boolean
   totalWins?: boolean
   totalMatches?: boolean
+  totalXP?: boolean
+  streak?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "passwordHash" | "displayName" | "avatarUrl" | "skillTier" | "elo" | "totalWins" | "totalMatches" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "passwordHash" | "displayName" | "avatarUrl" | "title" | "skillTier" | "elo" | "totalWins" | "totalMatches" | "totalXP" | "streak" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   submissions?: boolean | Prisma.User$submissionsArgs<ExtArgs>
   matchPlayers?: boolean | Prisma.User$matchPlayersArgs<ExtArgs>
@@ -996,10 +1122,13 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordHash: string
     displayName: string | null
     avatarUrl: string | null
+    title: string
     skillTier: $Enums.SkillTier
     elo: number
     totalWins: number
     totalMatches: number
+    totalXP: number
+    streak: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1434,10 +1563,13 @@ export interface UserFieldRefs {
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly displayName: Prisma.FieldRef<"User", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"User", 'String'>
+  readonly title: Prisma.FieldRef<"User", 'String'>
   readonly skillTier: Prisma.FieldRef<"User", 'SkillTier'>
   readonly elo: Prisma.FieldRef<"User", 'Int'>
   readonly totalWins: Prisma.FieldRef<"User", 'Int'>
   readonly totalMatches: Prisma.FieldRef<"User", 'Int'>
+  readonly totalXP: Prisma.FieldRef<"User", 'Int'>
+  readonly streak: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

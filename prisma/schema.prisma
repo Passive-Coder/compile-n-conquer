@@ -20,10 +20,13 @@ model User {
   passwordHash String
   displayName  String?
   avatarUrl    String?
+  title        String    @default("Code Warrior")
   skillTier    SkillTier @default(BEGINNER)
   elo          Int       @default(1000)
   totalWins    Int       @default(0)
   totalMatches Int       @default(0)
+  totalXP      Int       @default(0)
+  streak       Int       @default(0)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -60,6 +63,7 @@ model QueueEntry {
 
 model Match {
   id          String      @id @default(cuid())
+  maxPlayers  Int         @default(3)
   status      MatchStatus @default(WAITING)
   mode        GameMode    @default(FASTEST)
   startedAt   DateTime?
@@ -95,12 +99,20 @@ enum GameMode {
   DEBUGGING      // Fix broken code
 }
 
+enum MatchOutcome {
+  WIN
+  LOSS
+  DRAW
+}
+
 model MatchPlayer {
   id        String   @id @default(cuid())
   matchId   String
   userId    String
   rank      Int?     // Final rank after evaluation
   score     Float?   // Final weighted score
+  result    MatchOutcome?
+  xpDelta   Int      @default(0)
   joinedAt  DateTime @default(now())
 
   match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)

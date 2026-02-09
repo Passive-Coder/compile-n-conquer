@@ -55,10 +55,13 @@ export async function POST(req: NextRequest) {
         username: user.username,
         email: user.email,
         displayName: user.displayName,
+        title: user.title,
         skillTier: user.skillTier,
         elo: user.elo,
         totalWins: user.totalWins,
         totalMatches: user.totalMatches,
+        totalXP: user.totalXP,
+        streak: user.streak,
       },
       token,
     });

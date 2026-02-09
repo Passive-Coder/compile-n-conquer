@@ -32,7 +32,7 @@ export function Navbar() {
             Modes
           </Link>
           <Link
-            href="/arena"
+            href="/arena/lobby"
             className="text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-primary"
           >
             Arena
@@ -74,7 +74,7 @@ export function Navbar() {
               Modes
             </Link>
             <Link
-              href="/arena"
+              href="/arena/lobby"
               onClick={() => setOpen(false)}
               className="text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-primary"
             >

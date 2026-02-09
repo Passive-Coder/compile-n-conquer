@@ -10,15 +10,17 @@ interface User {
   status: "coding" | "idle" | "submitted"
   rank: number
   rating: number
+  solved: number
+  total: number
   color: string
 }
 
 const initialUsers: User[] = [
-  { id: "1", name: "you", avatar: "Y", status: "coding", rank: 1, rating: 1847, color: "hsl(120 100% 50%)" },
-  { id: "2", name: "n3x_byte", avatar: "N", status: "coding", rank: 2, rating: 2103, color: "hsl(45 100% 50%)" },
-  { id: "3", name: "z3r0_day", avatar: "Z", status: "idle", rank: 3, rating: 1956, color: "hsl(200 100% 50%)" },
-  { id: "4", name: "c0d3_wr4ith", avatar: "C", status: "submitted", rank: 4, rating: 2241, color: "hsl(0 80% 55%)" },
-  { id: "5", name: "algo_gh0st", avatar: "A", status: "coding", rank: 5, rating: 1724, color: "hsl(280 80% 60%)" },
+  { id: "1", name: "you", avatar: "Y", status: "coding", rank: 1, rating: 1847, solved: 2, total: 5, color: "hsl(120 100% 50%)" },
+  { id: "2", name: "n3x_byte", avatar: "N", status: "coding", rank: 2, rating: 2103, solved: 3, total: 5, color: "hsl(45 100% 50%)" },
+  { id: "3", name: "z3r0_day", avatar: "Z", status: "idle", rank: 3, rating: 1956, solved: 2, total: 5, color: "hsl(200 100% 50%)" },
+  { id: "4", name: "c0d3_wr4ith", avatar: "C", status: "submitted", rank: 4, rating: 2241, solved: 4, total: 5, color: "hsl(0 80% 55%)" },
+  { id: "5", name: "algo_gh0st", avatar: "A", status: "coding", rank: 5, rating: 1724, solved: 1, total: 5, color: "hsl(280 80% 60%)" },
 ]
 
 const statusConfig = {
@@ -27,11 +29,27 @@ const statusConfig = {
   submitted: { label: "DONE", dotClass: "bg-yellow-400" },
 }
 
-export function UsersPanel() {
-  const [users, setUsers] = useState(initialUsers)
+type UsersPanelProps = {
+  users?: User[]
+}
+
+export function UsersPanel({ users: usersProp }: UsersPanelProps) {
+  const hasProvidedUsers = Boolean(usersProp && usersProp.length > 0)
+  const [users, setUsers] = useState<User[]>(
+    hasProvidedUsers ? (usersProp as User[]) : initialUsers,
+  )
+
+  useEffect(() => {
+    if (hasProvidedUsers) {
+      setUsers(usersProp as User[])
+      return
+    }
+    setUsers(initialUsers)
+  }, [hasProvidedUsers, usersProp])
 
   // Simulate status changes
   useEffect(() => {
+    if (hasProvidedUsers) return
     const interval = setInterval(() => {
       setUsers((prev) =>
         prev.map((u) => {
@@ -45,6 +63,11 @@ export function UsersPanel() {
     }, 3000)
     return () => clearInterval(interval)
   }, [])
+
+  const sortedUsers = [...users].sort((a, b) => {
+    if (b.solved !== a.solved) return b.solved - a.solved
+    return b.rating - a.rating
+  })
 
   return (
     <div className="flex flex-col rounded-sm border border-border bg-card">
@@ -61,7 +84,7 @@ export function UsersPanel() {
 
       {/* User list */}
       <div className="flex flex-col">
-        {users.map((user) => {
+        {sortedUsers.map((user) => {
           const sc = statusConfig[user.status]
           return (
             <div
@@ -100,6 +123,9 @@ export function UsersPanel() {
               <div className="flex items-center gap-1.5">
                 <div className={`h-1.5 w-1.5 rounded-full ${sc.dotClass}`} />
                 <span className="text-xs text-muted-foreground">{sc.label}</span>
+              </div>
+              <div className="ml-2 text-xs text-muted-foreground">
+                {user.solved}/{user.total}
               </div>
             </div>
           )

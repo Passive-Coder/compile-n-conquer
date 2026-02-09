@@ -16,7 +16,7 @@ const questions: QuestionResult[] = [
     status: "solved",
     points: 150,
     maxPoints: 150,
-    bonuses: ["First Blood +50", "Clean Code +20"],
+    bonuses: ["First Blood +50"],
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ const questions: QuestionResult[] = [
     status: "solved",
     points: 120,
     maxPoints: 150,
-    bonuses: ["Speed +15"],
+    bonuses: [],
   },
   {
     id: 3,
@@ -61,12 +61,18 @@ const statusStyles = {
 const statusLabels = {
   solved: "SOLVED",
   attempted: "IN PROGRESS",
-  locked: "LOCKED",
+  locked: "NOT SEEN",
 }
 
-export function PointsPanel() {
-  const totalPoints = questions.reduce((sum, q) => sum + q.points, 0)
-  const maxPoints = questions.reduce((sum, q) => sum + q.maxPoints, 0)
+type PointsPanelProps = {
+  questions?: QuestionResult[]
+}
+
+export function PointsPanel({ questions: questionsProp }: PointsPanelProps) {
+  const resolvedQuestions =
+    questionsProp && questionsProp.length > 0 ? questionsProp : questions
+  const totalPoints = resolvedQuestions.reduce((sum, q) => sum + q.points, 0)
+  const maxPoints = resolvedQuestions.reduce((sum, q) => sum + q.maxPoints, 0)
 
   return (
     <div className="flex flex-col rounded-sm border border-border bg-card">
@@ -84,12 +90,11 @@ export function PointsPanel() {
 
       {/* Question breakdown */}
       <div className="flex flex-col">
-        {questions.map((q) => (
-          <div
+        {resolvedQuestions.map((q) => (
+          <button
             key={q.id}
-            className={`flex flex-col gap-1.5 border-b border-border/50 px-3 py-2.5 last:border-b-0 ${
-              q.status === "locked" ? "opacity-40" : ""
-            }`}
+            type="button"
+            className="flex w-full flex-col gap-1.5 border-b border-border/50 px-3 py-2.5 text-left transition hover:bg-primary/5 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary last:border-b-0"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -109,12 +114,6 @@ export function PointsPanel() {
 
             {/* Points bar */}
             <div className="flex items-center gap-2">
-              <div className="relative h-1.5 flex-1 overflow-hidden rounded-sm bg-secondary">
-                <div
-                  className="h-full rounded-sm bg-primary transition-all"
-                  style={{ width: `${(q.points / q.maxPoints) * 100}%` }}
-                />
-              </div>
               <span className="text-xs text-muted-foreground">
                 {q.points}/{q.maxPoints}
               </span>
@@ -134,7 +133,7 @@ export function PointsPanel() {
                 ))}
               </div>
             )}
-          </div>
+          </button>
         ))}
       </div>
 
