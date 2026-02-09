@@ -9,44 +9,41 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react").then(mod => mo
 import { Play, RotateCcw, Send, ChevronDown } from "lucide-react"
 import { executeCode } from "../../lib/piston"
 
-const defaultCode = `def two_sum(nums, target):
-    """
-    Given an array of integers nums and
-    an integer target, return indices of
-    the two numbers that add up to target.
-    """
-    seen = {}
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in seen:
-            return [seen[complement], i]
-        seen[num] = i
-    return []
 
-# Test
-print(two_sum([2, 7, 11, 15], 9))
-`
+// Problem statement types (generalized for multiple questions)
+export interface Example {
+  input: string
+  output: string
+}
 
-const problemStatement = {
+export interface ProblemStatement {
+  id?: number
+  title: string
+  difficulty?: "Easy" | "Medium" | "Hard" | string
+  tag?: string
+  description: string
+  examples: Example[]
+  constraints: string[]
+}
+
+export type ProblemSet = ProblemStatement[]
+
+const defaultCode = `# Start coding here\nprint("Hello, World")\n`
+
+const problemStatement: ProblemStatement = {
+  id: 1,
   title: "Two Sum",
   difficulty: "Easy",
   tag: "Q1 / 5",
-  description:
-    "Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution.",
+  description: "Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target.",
   examples: [
     { input: "nums = [2,7,11,15], target = 9", output: "[0, 1]" },
-    { input: "nums = [3,2,4], target = 6", output: "[1, 2]" },
   ],
-  constraints: [
-    "2 <= nums.length <= 10^4",
-    "-10^9 <= nums[i] <= 10^9",
-    "Only one valid answer exists.",
-  ],
+  constraints: ["2 <= nums.length <= 10^4", "-10^9 <= nums[i] <= 10^9"],
 }
 
-
 export function CodeEditor() {
-  const [code, setCode] = useState(defaultCode)
+  const [code, setCode] = useState("")
   const [activeTab, setActiveTab] = useState<"problem" | "output">("problem")
   const [language, setLanguage] = useState("python")
   const [showLangDropdown, setShowLangDropdown] = useState(false)
@@ -267,20 +264,9 @@ export function CodeEditor() {
             <span className="text-xs uppercase tracking-widest text-primary">
               {"Complexity Analyzer"}
             </span>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{"Time:"}</span>
-                <span className="text-xs font-bold text-primary">{"O(n)"}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{"Space:"}</span>
-                <span className="text-xs font-bold text-primary">{"O(n)"}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
-
   )
 }

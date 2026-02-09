@@ -76,22 +76,22 @@ export function PointsPanel({ questions }: PointsPanelProps) {
         <div className="text-xs text-muted-foreground p-2 text-center">No questions yet.</div>
       ) : (
         <div className="flex flex-col gap-2 p-2">
-          {/* ...existing code for question list... */}
+          {questions.map((q) => (
+            <div
+              key={q.id}
+              className={`rounded-sm border p-2 flex items-center justify-between ${statusStyles[q.status]}`}
+            >
+              <div>
+                <div className="text-sm font-bold">{q.title}</div>
+                <div className="text-xs text-muted-foreground">{q.points}/{q.maxPoints} pts</div>
+              </div>
+              <div className="text-xs text-right">
+                {q.bonuses.length ? q.bonuses.join(", ") : <span className="text-muted-foreground">—</span>}
+              </div>
+            </div>
+          ))}
         </div>
       )}
-      <div className="flex items-center justify-between border-t border-border px-3 py-2">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <Star className="h-3 w-3 text-primary" />
-            <span className="text-xs text-muted-foreground">Rank: #2</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">12:48</span>
-          </div>
-        </div>
-        <span className="text-xs font-bold text-primary">+85 XP bonus</span>
-      </div>
     </div>
   )
 }
