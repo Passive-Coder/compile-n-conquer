@@ -102,22 +102,6 @@ export function Hero() {
             Recon
           </Link>
         </div>
-
-        {/* Stats bar */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-8 border-t border-border pt-8">
-          {[
-            { label: "Active Players", value: "2,847" },
-            { label: "Battles Fought", value: "48,291" },
-            { label: "Lines Compiled", value: "12.4M" },
-          ].map((stat) => (
-            <div key={stat.label} className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-bold text-primary">{stat.value}</span>
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   )
