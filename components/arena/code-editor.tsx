@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import dynamic from "next/dynamic"
 import { Play, RotateCcw, Send, ChevronDown } from "lucide-react"
 
@@ -45,81 +45,16 @@ export function CodeEditor() {
   const [code, setCode] = useState(defaultCode)
   const [activeTab, setActiveTab] = useState<"problem" | "output">("problem")
   const [language, setLanguage] = useState("python")
-  const supportedLanguages = ["python", "cpp", "java"]
+  const supportedLanguages = [
+    "python", "cpp", "java", "javascript", "typescript", "c", "csharp", "go", "ruby", "rust", "php", "swift", "kotlin", "scala", "perl", "r", "dart", "haskell"
+  ]
   const [showLangDropdown, setShowLangDropdown] = useState(false)
   const [output, setOutput] = useState("")
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
-  useEffect(() => {
-    return () => {
-      // cleanup iframe on unmount
-      if (iframeRef.current && iframeRef.current.parentNode) {
-        iframeRef.current.parentNode.removeChild(iframeRef.current)
-        iframeRef.current = null
-      }
-    }
-  }, [])
-
-  const runJSInIframe = (src: string) => {
-    return new Promise<string[]>((resolve) => {
-      const iframe = iframeRef.current || document.createElement('iframe')
-      iframeRef.current = iframe
-      iframe.style.display = 'none'
-      iframe.sandbox = 'allow-scripts'
-      if (!iframe.parentElement) document.body.appendChild(iframe)
-
-      const html = `<!doctype html><html><body><script>
-        (function(){
-          var logs = [];
-          var push = function(){ logs.push(Array.prototype.slice.call(arguments).join(' ')); };
-          console.log = push;
-          console.error = push;
-          console.warn = push;
-          window.onerror = function(msg){ logs.push('Error: ' + msg); parent.postMessage({__cnc_run_result: logs}, '*'); };
-          try{\n${src}\n}catch(e){ logs.push('Error: ' + e && e.message ? e.message : String(e)); }
-          parent.postMessage({__cnc_run_result: logs}, '*');
-        })();\n<\/script></body></html>`
-
-      const listener = (e: MessageEvent) => {
-        if (e.data && e.data.__cnc_run_result) {
-          window.removeEventListener('message', listener)
-          resolve(Array.isArray(e.data.__cnc_run_result) ? e.data.__cnc_run_result : [String(e.data.__cnc_run_result)])
-        }
-      }
-      window.addEventListener('message', listener)
-      iframe.srcdoc = html
-    })
-  }
-
-  // Lazy Pyodide loader
-  let pyodidePromise: Promise<any> | null = null
-  const ensurePyodide = async () => {
-    if ((window as any).pyodide) return (window as any).pyodide
-    if (!pyodidePromise) {
-      pyodidePromise = new Promise(async (resolve, reject) => {
-        try {
-          const script = document.createElement('script')
-          script.src = 'https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js'
-          script.async = true
-          script.onload = async () => {
-            const py = await (window as any).loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.23.4/full/' })
-            ;(window as any).pyodide = py
-            resolve(py)
-          }
-          script.onerror = reject
-          document.body.appendChild(script)
-        } catch (e) {
-          reject(e)
-        }
-      })
-    }
-    return pyodidePromise
-  }
-
-  const handleRun = async () => {
+  const handleRun = () => {
     setActiveTab("output")
     setOutput("Running...\n")
-    const generateMockOutput = (src: string, lang: string) => {
+      const generateMockOutput = (src: string, lang: string) => {
         // Try to capture obvious prints/logs
         try {
           if (lang.includes("python")) {
@@ -149,56 +84,13 @@ export function CodeEditor() {
         return "[Mocked output] All test cases passed."
       }
 
-      // If Python, run via Pyodide in-browser
-      if (language === 'python') {
-        try {
-          const py = await ensurePyodide()
-          // build wrapper to capture stdout
-          const indent = (s: string) => s.split(/\r?\n/).map(l => '    ' + l).join('\n')
-          const wrapped = `import sys\nclass _C:\n    def __init__(self):\n        self.buf=[]\n    def write(self,s):\n        self.buf.append(str(s))\n    def flush(self):\n        pass\nbuf=_C()\nold=sys.stdout\nsys.stdout=buf\ntry:\n${indent(code)}\nexcept Exception as e:\n    import traceback\n    traceback.print_exc()\nfinally:\n    sys.stdout=old\n    import json\n    print('___PYODIDE_OUTPUT_BEGIN___')\n    print(json.dumps(''.join(buf.buf)))\n`
-          const res = await (py as any).runPythonAsync(wrapped)
-          // res is last printed value; parse output between marker
-          const outMarker = '___PYODIDE_OUTPUT_BEGIN___'
-          const idx = String(res).indexOf(outMarker)
-          let body = ''
-          if (idx >= 0) {
-            body = String(res).slice(idx + outMarker.length).trim()
-            try { body = JSON.parse(body) } catch(e) { body = body }
-          } else {
-            body = String(res)
-          }
-          setOutput(`> Running code in ${language}\n\n${body}\n\n---\nExecution time: 4ms\nMemory: 14.2 MB`)
-        } catch (e: any) {
-          setOutput(`> Running code in ${language}\n\n[Pyodide error] ${String(e)}\n\n---\nExecution time: 0ms`)
-        }
-        return
-      }
-
-      // For C++ / Java: attempt server runner at /api/execute, otherwise fallback to mock
-      if (language === 'cpp' || language === 'java') {
-        try {
-          const res = await fetch('/api/execute', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ language, code })
-          })
-          if (res.ok) {
-            const data = await res.json()
-            setOutput(`> Running code in ${language}\n\n${data.output || data.stdout || data}\n\n---\nExecution time: ${data.time || 'n/a'}`)
-            return
-          }
-        } catch (e) {
-          // fall through to mock
-        }
-      }
-
       setTimeout(() => {
         const mock = generateMockOutput(code, language)
         setOutput(
           `> Running code in ${language}\n\n${mock}\n\n---\nTest Case 1: PASSED\nTest Case 2: PASSED\n\nExecution time: 4ms\nMemory: 14.2 MB`
         )
       }, 600)
-    }
+  }
 
   const handleSubmit = () => {
     setActiveTab("output")

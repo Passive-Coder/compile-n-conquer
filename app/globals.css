@@ -68,8 +68,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px hsla(203, 100%, 50%, 0.3); }
-  50% { box-shadow: 0 0 20px hsla(221, 100%, 50%, 0.6), 0 0 40px hsla(215, 100%, 50%, 0.2); }
+  0%, 100% { box-shadow: 0 0 5px hsl(120 100% 50% / 0.3); }
+  50% { box-shadow: 0 0 20px hsl(120 100% 50% / 0.6), 0 0 40px hsl(120 100% 50% / 0.2); }
 }
 
 @keyframes typing {
@@ -113,10 +113,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsla(203, 100%, 50%, 0.3);
+  background: hsl(120 100% 50% / 0.3);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsla(204, 100%, 50%, 0.5);
+  background: hsl(120 100% 50% / 0.5);
 }
