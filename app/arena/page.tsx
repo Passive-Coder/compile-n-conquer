@@ -48,7 +48,7 @@ export default function ArenaPage() {
 
       {/* Progress bar section */}
       <div className="border-b border-border px-4 py-2">
-        <ProgressBar />
+        <ProgressBar players={[]} roundLabel="" timerLabel="" />
       </div>
 
       {/* Main content area */}
@@ -60,8 +60,8 @@ export default function ArenaPage() {
 
         {/* Right sidebar: Users + Points */}
         <div className="hidden w-72 flex-col gap-2 overflow-auto border-l border-border p-2 xl:flex">
-          <UsersPanel />
-          <PointsPanel />
+          <UsersPanel users={[]} />
+          <PointsPanel questions={[]} />
         </div>
       </div>
     </main>

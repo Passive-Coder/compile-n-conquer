@@ -1,7 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
+import axios from "axios"
+
+import dynamic from "next/dynamic"
+// Dynamically import MonacoEditor to avoid SSR issues
+const MonacoEditor = dynamic(() => import("@monaco-editor/react").then(mod => mod.default), { ssr: false })
 import { Play, RotateCcw, Send, ChevronDown } from "lucide-react"
+import { executeCode } from "../../lib/piston"
 
 const defaultCode = `def two_sum(nums, target):
     """
@@ -38,31 +44,59 @@ const problemStatement = {
   ],
 }
 
+
 export function CodeEditor() {
   const [code, setCode] = useState(defaultCode)
   const [activeTab, setActiveTab] = useState<"problem" | "output">("problem")
   const [language, setLanguage] = useState("python")
   const [showLangDropdown, setShowLangDropdown] = useState(false)
   const [output, setOutput] = useState("")
+  const monacoRef = useRef(null)
 
-  const handleRun = () => {
-    setActiveTab("output")
-    setOutput("Running...\n")
-    setTimeout(() => {
-      setOutput(
-        `$ python solution.py\n[0, 1]\n\n---\nTest Case 1: PASSED\nTest Case 2: PASSED\nTest Case 3: PASSED\n\nAll test cases passed.\nExecution time: 4ms\nMemory: 14.2 MB`
-      )
-    }, 1200)
+  // Register custom theme on mount
+  const handleEditorWillMount = (monaco: any) => {
+    monaco.editor.defineTheme("black-green", {
+      base: "vs-dark",
+      inherit: true,
+      rules: [
+        { token: "", foreground: "00FF00", background: "000000" },
+        { token: "comment", foreground: "00bb00" },
+        { token: "string", foreground: "00FF00" },
+        { token: "number", foreground: "00FF00" },
+        { token: "keyword", foreground: "39FF14", fontStyle: "bold" },
+        { token: "identifier", foreground: "00FF00" },
+        { token: "delimiter", foreground: "00FF00" },
+      ],
+      colors: {
+        "editor.background": "#000000",
+        "editor.foreground": "#00FF00",
+        "editorLineNumber.foreground": "#008800",
+        "editorCursor.foreground": "#39FF14",
+        "editor.selectionBackground": "#00330099",
+        "editor.inactiveSelectionBackground": "#00330055",
+        "editor.lineHighlightBackground": "#002200",
+        "editorIndentGuide.background": "#003300",
+        "editorIndentGuide.activeBackground": "#00FF00",
+      },
+    })
   }
 
-  const handleSubmit = () => {
+  const handleRun = async () => {
+    setOutput("Running...")
     setActiveTab("output")
-    setOutput("Submitting...\n")
-    setTimeout(() => {
-      setOutput(
-        `$ submit solution.py\n\n[ACCEPTED]\n\nRuntime: 4ms (faster than 95.2%)\nMemory: 14.2 MB (less than 88.1%)\n\nTime Complexity: O(n)\nSpace Complexity: O(n)\n\nCode Quality Score: 87/100\n  - Naming: 9/10\n  - Readability: 9/10\n  - Efficiency: 10/10\n  - Clean Code: 8.7/10\n\n+150 XP | +25 Speed Bonus | First Blood: +50 XP`
-      )
-    }, 1500)
+    const result = await executeCode(language, code)
+    if (result.output) setOutput(result.output)
+    else if (result.error) setOutput(result.error)
+    else setOutput("No output.")
+  }
+
+  const handleSubmit = async () => {
+    setOutput("Submitting...")
+    setActiveTab("output")
+    const result = await executeCode(language, code)
+    if (result.output) setOutput(result.output)
+    else if (result.error) setOutput(result.error)
+    else setOutput("No output.")
   }
 
   return (
@@ -207,29 +241,23 @@ export function CodeEditor() {
           </div>
         </div>
 
-        {/* Line numbers + textarea */}
-        <div className="relative flex flex-1 overflow-auto">
-          {/* Line numbers */}
-          <div className="flex flex-col border-r border-border bg-secondary/30 px-3 py-3 text-right">
-            {code.split("\n").map((_, i) => (
-              <span
-                key={i}
-                className="text-xs leading-5 text-muted-foreground/50"
-              >
-                {i + 1}
-              </span>
-            ))}
-          </div>
-
-          {/* Code area */}
-          <textarea
+        {/* Monaco Code Editor */}
+        <div className="flex-1 min-h-0">
+          <MonacoEditor
+            height="100%"
+            defaultLanguage={language === "c++" ? "cpp" : language}
+            language={language === "c++" ? "cpp" : language}
             value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className="flex-1 resize-none bg-transparent p-3 text-xs leading-5 text-foreground caret-primary focus:outline-none"
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
+            onChange={(value) => setCode(value || "")}
+            theme="black-green"
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              wordWrap: "on",
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+            }}
+            beforeMount={handleEditorWillMount}
           />
         </div>
 
@@ -253,5 +281,6 @@ export function CodeEditor() {
         </div>
       </div>
     </div>
+
   )
 }
