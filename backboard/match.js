@@ -1,8 +1,21 @@
 import { BackboardClient } from 'backboard-sdk';
 
-const client = new BackboardClient({
-  apiKey: process.env.BACKBOARD_API_KEY,
-});
+let _client = null;
+function getClient() {
+  if (!_client) {
+    _client = new BackboardClient({
+      apiKey: process.env.BACKBOARD_API_KEY,
+    });
+  }
+  return _client;
+}
+
+// ─── HELPERS ────────────────────────────────────────────────────
+
+function stripMarkdownFences(text) {
+  // Remove ```json ... ``` or ``` ... ``` wrappers
+  return text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+}
 
 // ─── SYSTEM PROMPTS ─────────────────────────────────────────────
 
@@ -146,7 +159,7 @@ function rankMetric(playerNames, playersData, questionIdx, metric, N) {
  * Creates a match assistant and returns its ID.
  */
 async function createMatchAssistant(matchId) {
-  const assistant = await client.createAssistant({
+  const assistant = await getClient().createAssistant({
     name: `Match-${matchId}`,
     system_prompt: 'Match coordinator assistant',
   });
@@ -158,7 +171,7 @@ async function createMatchAssistant(matchId) {
  * Returns { threadId, playerName }.
  */
 async function createPlayerThread(assistantId, playerName) {
-  const thread = await client.createThread(assistantId);
+  const thread = await getClient().createThread(assistantId);
   return { threadId: thread.threadId, playerName };
 }
 
@@ -166,7 +179,7 @@ async function createPlayerThread(assistantId, playerName) {
  * Creates the comparison thread within the match assistant.
  */
 async function createComparisonThread(assistantId) {
-  const thread = await client.createThread(assistantId);
+  const thread = await getClient().createThread(assistantId);
   return thread.threadId;
 }
 
@@ -183,14 +196,14 @@ async function evaluatePlayer(threadId, answers) {
     })),
   });
 
-  const response = await client.addMessage(threadId, {
+  const response = await getClient().addMessage(threadId, {
     content: `${PLAYER_THREAD_SYSTEM_PROMPT}\n\nInput:\n${messageContent}`,
     llm_provider: 'openai',
     model_name: 'gpt-4o',
     stream: false,
   });
 
-  const parsed = JSON.parse(response.content);
+  const parsed = JSON.parse(stripMarkdownFences(response.content));
 
   // Enforce Context=0 → O(inf) rule
   return parsed.map((entry) => {
@@ -221,7 +234,7 @@ async function compareAndGrade(comparisonThreadId, playerResults) {
   // Also send to comparison thread for cross-validation (optional)
   const messageContent = JSON.stringify(comparisonPayload);
 
-  await client.addMessage(comparisonThreadId, {
+  await getClient().addMessage(comparisonThreadId, {
     content: `${COMPARISON_THREAD_SYSTEM_PROMPT}\n\nInput:\n${messageContent}`,
     llm_provider: 'openai',
     model_name: 'gpt-4o',
