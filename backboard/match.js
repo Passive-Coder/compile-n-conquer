@@ -1,4 +1,5 @@
 import { BackboardClient } from 'backboard-sdk';
+import { pickRandomQuestions } from './questions.js'
 
 let _client = null;
 function getClient() {
@@ -275,6 +276,9 @@ async function runMatch(matchId, players) {
   // 1. Create match assistant
   const assistantId = await createMatchAssistant(matchId);
 
+  // 1.5 Assign questions to this match (select 3 random questions)
+  const assignedQuestions = pickRandomQuestions(3)
+
   // 2. Create player threads + comparison thread in parallel
   const playerThreadPromises = players.map((p) =>
     createPlayerThread(assistantId, p.name)
@@ -299,7 +303,7 @@ async function runMatch(matchId, players) {
   // 5. Run comparison
   const grades = await compareAndGrade(comparisonThreadId, playerResults);
 
-  return { assistantId, playerResults, grades };
+  return { assistantId, playerResults, grades, questions: assignedQuestions };
 }
 
 export {

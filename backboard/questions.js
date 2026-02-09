@@ -1,0 +1,147 @@
+export const QUESTIONS = [
+  {
+    id: "q1",
+    title: "Two Sum",
+    difficulty: "Easy",
+    description: "Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target.",
+    examples: [{ input: "nums = [2,7,11,15], target = 9", output: "[0, 1]" }],
+    constraints: ["2 <= nums.length <= 10^4"],
+    tags: ["array", "hashmap"],
+  },
+  {
+    id: "q2",
+    title: "Binary Search (find first >= x)",
+    difficulty: "Easy",
+    description: "Given a sorted array and a value x, return the index of the first element greater than or equal to x.",
+    examples: [{ input: "arr = [1,3,5,7], x=4", output: "2" }],
+    constraints: ["1 <= arr.length <= 10^5"],
+    tags: ["binary-search", "array"],
+  },
+  {
+    id: "q3",
+    title: "Merge Intervals",
+    difficulty: "Medium",
+    description: "Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals.",
+    examples: [{ input: '[[1,3],[2,6],[8,10]]', output: '[[1,6],[8,10]]' }],
+    constraints: ["0 <= intervals.length <= 10^4"],
+    tags: ["intervals", "sorting"],
+  },git 
+  {
+    id: "q4",
+    title: "LRU Cache (design)",
+    difficulty: "Hard",
+    description: "Design a data structure that supports get and put in O(1) time.",
+    examples: [],
+    constraints: ["At most 10^5 calls to get/put"],
+    tags: ["design", "hashmap", "linkedlist"],
+  },
+  {
+    id: "q5",
+    title: "Valid Parentheses",
+    difficulty: "Easy",
+    description: "Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
+    examples: [{ input: '()[]{}', output: 'true' }],
+    constraints: ["1 <= s.length <= 10^4"],
+    tags: ["stack", "string"],
+  },
+  {
+    id: "q6",
+    title: "Subset Sum (small n)",
+    difficulty: "Medium",
+    description: "Given a small set of numbers (n <= 30) and a target, determine if a subset sums to target. Intended solutions may use meet-in-the-middle or exponential search.",
+    examples: [{ input: 'nums=[3,34,4,12,5,2], target=9', output: 'true' }],
+    constraints: ["n <= 30"],
+    tags: ["dp", "bitmask"],
+  },
+  {
+    id: "q7",
+    title: "Bubble Sort (demonstration)",
+    difficulty: "Easy",
+    description: "Implement bubble sort and return the sorted array (educational).",
+    examples: [{ input: '[3,2,1]', output: '[1,2,3]' }],
+    constraints: ["1 <= arr.length <= 500"],
+    tags: ["sorting", "educational"],
+  },
+  {
+    id: "q8",
+    title: "Longest Palindromic Substring",
+    difficulty: "Medium",
+    description: "Return the longest palindromic substring. Brute-force is O(n^2) with center expansion; optimized solutions exist.",
+    examples: [{ input: 'babad', output: "'bab' or 'aba'" }],
+    constraints: ["1 <= s.length <= 1000"],
+    tags: ["string", "dp"],
+  },
+  {
+    id: "q9",
+    title: "Matrix Multiplication (naive)",
+    difficulty: "Medium",
+    description: "Multiply two n x n matrices using the naive algorithm (exercise in cubic time).",
+    examples: [],
+    constraints: ["n <= 200"],
+    tags: ["math", "matrix"],
+  },
+  {
+    id: "q10",
+    title: "Generate Permutations",
+    difficulty: "Medium",
+    description: "Generate all permutations of an array (factorial-size output).",
+    examples: [{ input: '[1,2,3]', output: '[[1,2,3],[1,3,2],...]' }],
+    constraints: ["n <= 8"],
+    tags: ["backtracking", "recursion"],
+  },
+  {
+    id: "q11",
+    title: "Dijkstra (shortest path)",
+    difficulty: "Medium",
+    description: "Given a weighted graph, return shortest path distances from a source using a priority queue.",
+    examples: [],
+    constraints: ["1 <= V <= 10^5, 0 <= E <= 2*10^5"],
+    tags: ["graphs", "priority-queue"],
+  },
+  {
+    id: "q12",
+    title: "Tower of Hanoi (recursive)",
+    difficulty: "Easy",
+    description: "Show the sequence of moves to solve Tower of Hanoi for n disks (exponential in n).",
+    examples: [],
+    constraints: ["n <= 10"],
+    tags: ["recursion", "math"],
+  },
+  {
+    id: "q13",
+    title: "Find Median of Two Sorted Arrays (challenge)",
+    difficulty: "Hard",
+    description: "Find the median of two sorted arrays in logarithmic time (expected O(log(min(n,m)))).",
+    examples: [],
+    constraints: ["1 <= m, n <= 10^5"],
+    tags: ["binary-search", "divide-and-conquer"],
+  },
+  {
+    id: "q14",
+    title: "Travelling Salesman (small n)",
+    difficulty: "Hard",
+    description: "Given distances between cities (n <= 12), compute the minimum tour cost (bitmask DP / factorial-exponential complexity).",
+    examples: [],
+    constraints: ["n <= 12"],
+    tags: ["dp", "bitmask", "tsp"],
+  },
+  {
+    id: "q15",
+    title: "Count Sort (linear for range-limited inputs)",
+    difficulty: "Easy",
+    description: "Sort integers in a known small range using counting sort (O(n + k) time).",
+    examples: [{ input: '[2,5,3,0,2,3,0,3]', output: '[0,0,2,2,3,3,3,5]' }],
+    constraints: ["0 <= ai <= 1000"],
+    tags: ["sorting", "counting"],
+  },
+]
+
+export function pickRandomQuestions(n = 3) {
+  const pool = QUESTIONS.slice()
+  const chosen = []
+  while (chosen.length < n && pool.length > 0) {
+    const idx = Math.floor(Math.random() * pool.length)
+    chosen.push(pool.splice(idx, 1)[0])
+  }
+  return chosen
+}
