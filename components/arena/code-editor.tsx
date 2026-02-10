@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { Play, RotateCcw, Send, ChevronDown } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { Play, RotateCcw, ChevronDown } from "lucide-react"
 import dynamic from "next/dynamic"
 
 const MonacoEditor = dynamic(
@@ -189,22 +189,121 @@ type CodeEditorProblem = {
 
 type CodeEditorProps = {
   problem?: CodeEditorProblem
+  matchId?: string | null
+  questionId?: string | null
+  problemTitle?: string
+  onSubmissionRecorded?: (payload: {
+    questionId: string
+    testsPassed: number
+    testsTotal: number
+  }) => void
+  onCodeChange?: (code: string) => void
+  onLanguageChange?: (language: string) => void
 }
 
-export function CodeEditor({ problem }: CodeEditorProps) {
+type SubmissionCacheItem = {
+  problemTitle: string
+  codeDescription: string
+  submittedAt: string
+  testsPassed: string
+}
+
+export function CodeEditor({
+  problem,
+  matchId,
+  questionId,
+  problemTitle,
+  onSubmissionRecorded,
+  onCodeChange,
+  onLanguageChange,
+}: CodeEditorProps) {
   const [code, setCode] = useState(defaultCode)
-  const [activeTab, setActiveTab] = useState<"problem" | "output">("problem")
+  const [activeTab, setActiveTab] = useState<"problem" | "input">("problem")
   const [language, setLanguage] = useState("python")
   const [showLangDropdown, setShowLangDropdown] = useState(false)
   const [output, setOutput] = useState("")
+  const [customInput, setCustomInput] = useState("")
   const [runtimes, setRuntimes] = useState<PistonRuntime[]>([])
   const [runtimeError, setRuntimeError] = useState<string | null>(null)
   const [isLoadingRuntimes, setIsLoadingRuntimes] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
+  const [isRunningSamples, setIsRunningSamples] = useState(false)
+  const [sampleError, setSampleError] = useState<string | null>(null)
+  const [sampleResults, setSampleResults] = useState<
+    Array<{
+      input: string
+      expected: string
+      actual?: string
+      status: "pass" | "fail" | "error" | "idle"
+    }>
+  >([])
+  const [submissionCache, setSubmissionCache] = useState<SubmissionCacheItem[]>(
+    [],
+  )
   const activeProblem = problem ?? problemStatement
   const problemTag = activeProblem.tag ?? problemStatement.tag
   const problemDifficulty =
     activeProblem.difficulty ?? problemStatement.difficulty
+  const difficultyClass = (() => {
+    const normalized = problemDifficulty?.toLowerCase()
+    if (normalized === "easy") {
+      return "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+    }
+    if (normalized === "medium") {
+      return "border-amber-500/40 bg-amber-500/10 text-amber-300"
+    }
+    if (normalized === "hard") {
+      return "border-rose-500/40 bg-rose-500/10 text-rose-300"
+    }
+    return "border-primary/30 bg-primary/10 text-primary"
+  })()
+  const saveTimerRef = useRef<number | null>(null)
+  const lastTitleRef = useRef<string | null>(null)
+
+  const storageTitle = problemTitle ?? activeProblem.title
+
+  useEffect(() => {
+    if (!storageTitle) return
+    if (lastTitleRef.current !== storageTitle) {
+      const isFirstLoad = lastTitleRef.current === null
+      lastTitleRef.current = storageTitle
+      if (typeof window !== "undefined") {
+        const cached = window.localStorage.getItem(storageTitle)
+        if (cached !== null) {
+          setCode(cached)
+        } else if (!isFirstLoad) {
+          setCode("")
+        }
+      }
+    }
+  }, [storageTitle])
+  useEffect(() => {
+    if (onCodeChange) {
+      onCodeChange(code)
+    }
+  }, [code, onCodeChange])
+
+  useEffect(() => {
+    if (onLanguageChange) {
+      onLanguageChange(language)
+    }
+  }, [language, onLanguageChange])
+
+  useEffect(() => {
+    if (!storageTitle) return
+    if (saveTimerRef.current) {
+      window.clearTimeout(saveTimerRef.current)
+    }
+    saveTimerRef.current = window.setTimeout(() => {
+      if (typeof window === "undefined") return
+      window.localStorage.setItem(storageTitle, code)
+    }, 3000)
+    return () => {
+      if (saveTimerRef.current) {
+        window.clearTimeout(saveTimerRef.current)
+      }
+    }
+  }, [code, storageTitle])
 
   const handleEditorWillMount = (monaco: any) => {
     monaco.editor.defineTheme("black-green", {
@@ -272,7 +371,7 @@ export function CodeEditor({ problem }: CodeEditorProps) {
   }, [])
 
   const handleRun = async () => {
-    setActiveTab("output")
+    setActiveTab("input")
     setOutput("Running...\n")
     setIsRunning(true)
 
@@ -299,7 +398,7 @@ export function CodeEditor({ problem }: CodeEditorProps) {
               content: code,
             },
           ],
-          stdin: "",
+          stdin: customInput,
         }),
       })
 
@@ -313,14 +412,147 @@ export function CodeEditor({ problem }: CodeEditorProps) {
     }
   }
 
-  const handleSubmit = () => {
-    setActiveTab("output")
+  const handleRunSamples = async () => {
+    setSampleError(null)
+    const examples =
+      activeProblem.examples && activeProblem.examples.length > 0
+        ? activeProblem.examples
+        : problemStatement.examples
+
+    if (!examples || examples.length === 0) {
+      setSampleError("No sample tests available for this question.")
+      return
+    }
+
+    if (!selectedRuntime) {
+      setSampleError("No runtime available for the selected language.")
+      return
+    }
+
+    setIsRunningSamples(true)
+    setSampleResults(
+      examples.map((ex) => ({
+        input: ex.input,
+        expected: ex.output,
+        status: "idle",
+      })),
+    )
+
+    const fileName = fileNameForLanguage(language)
+    const results: Array<{
+      input: string
+      expected: string
+      actual?: string
+      status: "pass" | "fail" | "error" | "idle"
+    }> = []
+
+    for (const ex of examples) {
+      try {
+        const submissionRes = await fetch(`${PISTON_BASE}/execute`, {
+          method: "POST",
+          headers: {
+            ...baseHeaders,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            language: selectedRuntime.language,
+            version: selectedRuntime.version,
+            files: [
+              {
+                ...(fileName ? { name: fileName } : {}),
+                content: code,
+              },
+            ],
+            stdin: ex.input ?? "",
+          }),
+        })
+
+        const execution = await jsonGuard<PistonExecuteResponse>(submissionRes)
+        const actual = (execution.run.stdout || execution.run.output || "")
+          .trim()
+        const expected = (ex.output ?? "").trim()
+        const status = actual === expected ? "pass" : "fail"
+        results.push({
+          input: ex.input,
+          expected: ex.output,
+          actual,
+          status,
+        })
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Execution failed."
+        results.push({
+          input: ex.input,
+          expected: ex.output,
+          actual: message,
+          status: "error",
+        })
+      }
+      setSampleResults([...results])
+    }
+
+    setIsRunningSamples(false)
+  }
+
+  const handleSubmit = async () => {
+    setActiveTab("input")
     setOutput("Submitting...\n")
-    setTimeout(() => {
+
+    if (!matchId || !questionId) {
+      setOutput("Missing match or question context. Unable to submit.")
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/match/${matchId}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId,
+          code,
+          language,
+        }),
+      })
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setOutput(payload?.error || "Submission failed.")
+        return
+      }
+
+      const testsPassed = payload?.submission?.testsPassed ?? 0
+      const testsTotal = payload?.submission?.testsTotal ?? 0
+      const outputText =
+        payload?.submission?.stdout ||
+        payload?.submission?.stderr ||
+        "Submitted."
+
       setOutput(
-        `$ submit solution.py\n\n[ACCEPTED]\n\nRuntime: 4ms (faster than 95.2%)\nMemory: 14.2 MB (less than 88.1%)\n\nTime Complexity: O(n)\nSpace Complexity: O(n)\n\nCode Quality Score: 87/100\n  - Naming: 9/10\n  - Readability: 9/10\n  - Efficiency: 10/10\n  - Clean Code: 8.7/10\n\n+150 XP | +25 Speed Bonus | First Blood: +50 XP`
+        `${outputText}\n\nTests: ${testsPassed}/${testsTotal}\nSubmission recorded.`,
       )
-    }, 1500)
+
+      const cacheItem: SubmissionCacheItem = {
+        problemTitle: problemTitle ?? activeProblem.title,
+        codeDescription: code,
+        submittedAt: new Date().toISOString(),
+        testsPassed: `${testsPassed}/${testsTotal}`,
+      }
+
+      setSubmissionCache((prev) => {
+        const next = [cacheItem, ...prev]
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(
+            "cnc.submissions",
+            JSON.stringify(next),
+          )
+        }
+        return next
+      })
+
+      if (onSubmissionRecorded && questionId) {
+        onSubmissionRecorded({ questionId, testsPassed, testsTotal })
+      }
+    } catch (err) {
+      setOutput(err instanceof Error ? err.message : "Submission failed.")
+    }
   }
 
   return (
@@ -340,14 +572,14 @@ export function CodeEditor({ problem }: CodeEditorProps) {
             Problem
           </button>
           <button
-            onClick={() => setActiveTab("output")}
+            onClick={() => setActiveTab("input")}
             className={`flex-1 px-4 py-2 text-xs uppercase tracking-widest transition-colors ${
-              activeTab === "output"
+              activeTab === "input"
                 ? "border-b-2 border-primary bg-secondary/50 text-primary"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Output
+            Custom Input
           </button>
         </div>
 
@@ -361,7 +593,7 @@ export function CodeEditor({ problem }: CodeEditorProps) {
                   {activeProblem.title}
                 </h2>
                 {problemDifficulty && (
-                  <span className="rounded-sm border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                  <span className={`rounded-sm border px-2 py-0.5 text-xs ${difficultyClass}`}>
                     {problemDifficulty}
                   </span>
                 )}
@@ -408,11 +640,113 @@ export function CodeEditor({ problem }: CodeEditorProps) {
                     </ul>
                   </div>
                 )}
+
+              <div className="mt-2 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-widest text-primary">
+                    {"Sample tests"}
+                  </span>
+                  <button
+                    onClick={handleRunSamples}
+                    disabled={isRunningSamples || isLoadingRuntimes}
+                    className="rounded-sm border border-border bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-foreground transition hover:border-primary hover:text-primary disabled:opacity-70"
+                  >
+                    {isRunningSamples ? "Running..." : "Run Samples"}
+                  </button>
+                </div>
+
+                {sampleError && (
+                  <div className="rounded-sm border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                    {sampleError}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  {(sampleResults.length > 0
+                    ? sampleResults
+                    : (activeProblem.examples && activeProblem.examples.length > 0
+                        ? activeProblem.examples
+                        : problemStatement.examples
+                      ).map((ex) => ({
+                        input: ex.input,
+                        expected: ex.output,
+                        status: "idle" as const,
+                      }))
+                  ).map((result, index) => (
+                    <div
+                      key={`${result.input}-${index}`}
+                      className="rounded-sm border border-border bg-secondary/40 p-3 text-xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase tracking-widest text-muted-foreground">
+                          {"Case " + (index + 1)}
+                        </span>
+                        <span
+                          className={`rounded-sm border px-2 py-0.5 text-[10px] uppercase tracking-widest ${
+                            result.status === "pass"
+                              ? "border-primary/30 bg-primary/10 text-primary"
+                              : result.status === "fail"
+                              ? "border-yellow-500/30 bg-yellow-500/10 text-yellow-300"
+                              : result.status === "error"
+                              ? "border-rose-500/30 bg-rose-500/10 text-rose-300"
+                              : "border-border bg-secondary/60 text-muted-foreground"
+                          }`}
+                        >
+                          {result.status === "pass"
+                            ? "PASS"
+                            : result.status === "fail"
+                            ? "FAIL"
+                            : result.status === "error"
+                            ? "ERROR"
+                            : "NOT RUN"}
+                        </span>
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        <span className="text-primary">{"Input: "}</span>
+                        {result.input}
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        <span className="text-primary">{"Expected: "}</span>
+                        {result.expected}
+                      </div>
+                      {result.status !== "idle" && (
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          <span className="text-primary">{"Actual: "}</span>
+                          {result.actual ?? ""}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
-            <pre className="whitespace-pre-wrap text-xs leading-relaxed text-foreground">
-              {output || "No output yet. Run your code to see results."}
-            </pre>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase tracking-widest text-primary">
+                  {"Custom input"}
+                </span>
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {"stdin"}
+                </span>
+              </div>
+              <textarea
+                className="h-24 w-full resize-none rounded-sm border border-border bg-secondary/40 px-3 py-2 text-xs text-foreground focus:border-primary focus:outline-none"
+                value={customInput}
+                onChange={(event) => setCustomInput(event.target.value)}
+                placeholder="Provide input for your program (optional)"
+              />
+              <div className="flex flex-col gap-2">
+                <span className="text-xs uppercase tracking-widest text-primary">
+                  {"Last output"}
+                </span>
+                <div className="rounded-sm border border-border bg-secondary/40 p-3">
+                  <pre className="whitespace-pre-wrap text-xs leading-relaxed text-foreground">
+                    {output || "No output yet. Run your code to see results."}
+                  </pre>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -484,13 +818,7 @@ export function CodeEditor({ problem }: CodeEditorProps) {
               <Play className="h-3 w-3 text-primary" />
               {isRunning ? "Running" : "Run"}
             </button>
-            <button
-              onClick={handleSubmit}
-              className="flex items-center gap-1.5 rounded-sm border border-primary bg-primary px-3 py-1.5 text-xs uppercase tracking-widest text-primary-foreground transition-all hover:bg-primary/90"
-            >
-              <Send className="h-3 w-3" />
-              Submit
-            </button>
+            {/* Submit moved to scoreboard */}
           </div>
         </div>
 

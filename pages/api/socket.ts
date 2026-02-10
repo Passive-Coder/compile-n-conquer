@@ -28,6 +28,10 @@ export default function handler(
 
     io.on("connection", (socket) => {
       socket.emit("lobby:connected", { id: socket.id })
+
+      socket.on("arena:code", (payload) => {
+        io.emit("arena:code", payload)
+      })
     })
   } else if (res.socket.server.io) {
     setSocketServer(res.socket.server.io)

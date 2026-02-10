@@ -3,7 +3,15 @@
 // ============================================================
 // Runs user code against the Piston API (self-hosted or public).
 
-const PISTON_URL = process.env.PISTON_URL || "https://emkc.org/api/v2/piston";
+const rawBase =
+  process.env.PISTON_BASE ||
+  process.env.PISTON_URL ||
+  "https://emkc.org";
+
+const normalizedBase = rawBase.replace(/\/+$/, "");
+const PISTON_BASE = normalizedBase.includes("/api/v2")
+  ? normalizedBase
+  : `${normalizedBase}/api/v2`;
 
 // Language → Piston runtime mapping
 const LANGUAGE_MAP: Record<string, { language: string; version: string }> = {
@@ -53,7 +61,7 @@ export async function runCode(
     );
   }
 
-  const response = await fetch(`${PISTON_URL}/api/v2/execute`, {
+  const response = await fetch(`${PISTON_BASE}/execute`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -80,7 +88,7 @@ export async function runCode(
 export async function getRuntimes(): Promise<
   Array<{ language: string; version: string; aliases: string[] }>
 > {
-  const response = await fetch(`${PISTON_URL}/api/v2/runtimes`);
+  const response = await fetch(`${PISTON_BASE}/runtimes`);
   if (!response.ok) {
     throw new Error(`Failed to fetch runtimes: ${response.status}`);
   }

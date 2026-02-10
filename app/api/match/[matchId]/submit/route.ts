@@ -1,12 +1,11 @@
 // ============================================================
 // POST /api/match/[matchId]/submit — Submit code for a question
 // ============================================================
-// Runs code against test cases via Piston, stores results.
+// Stores submission without running code.
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
-import { runCode, type PistonResult } from "@/lib/piston";
 
 export async function POST(
   req: NextRequest,
@@ -70,48 +69,7 @@ export async function POST(
       );
     }
 
-    const question = matchQuestion.question;
-
-    // Run code against test cases via Piston
-    let testsPassed = 0;
-    let testsTotal = 0;
-    let lastStdout = "";
-    let lastStderr = "";
-    let lastExitCode = 0;
-    let execTimeMs = 0;
-
-    const testCases = (question.testCases as Array<{
-      input: string;
-      expectedOutput: string;
-    }>) || [];
-
-    testsTotal = testCases.length;
-
-    if (testsTotal > 0) {
-      for (const tc of testCases) {
-        const result: PistonResult = await runCode(language, code, tc.input);
-
-        lastStdout = result.run.stdout;
-        lastStderr = result.run.stderr;
-        lastExitCode = result.run.code;
-
-        // Compare output (trim whitespace)
-        const actual = result.run.stdout.trim();
-        const expected = tc.expectedOutput.trim();
-
-        if (actual === expected) {
-          testsPassed++;
-        }
-      }
-    } else {
-      // No test cases — just run the code once
-      const result: PistonResult = await runCode(language, code);
-      lastStdout = result.run.stdout;
-      lastStderr = result.run.stderr;
-      lastExitCode = result.run.code;
-    }
-
-    // Save submission
+    // Save submission (no execution required)
     const submission = await prisma.submission.create({
       data: {
         matchId,
@@ -120,23 +78,17 @@ export async function POST(
         code,
         language,
         charCount: code.length,
-        stdout: lastStdout,
-        stderr: lastStderr,
-        exitCode: lastExitCode,
-        execTimeMs,
-        testsPassed,
-        testsTotal,
       },
     });
 
     return NextResponse.json({
       submission: {
         id: submission.id,
-        testsPassed,
-        testsTotal,
-        stdout: lastStdout,
-        stderr: lastStderr,
-        exitCode: lastExitCode,
+        testsPassed: submission.testsPassed,
+        testsTotal: submission.testsTotal,
+        stdout: submission.stdout,
+        stderr: submission.stderr,
+        exitCode: submission.exitCode,
       },
     });
   } catch (error) {

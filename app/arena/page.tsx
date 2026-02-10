@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { CodeEditor } from "@/components/arena/code-editor"
 import { UsersPanel } from "@/components/arena/users-panel"
 import { PointsPanel } from "@/components/arena/points-panel"
 import { Terminal, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { io, type Socket } from "socket.io-client"
 
 type MatchQuestion = {
   questionId: string
@@ -71,12 +72,68 @@ export default function ArenaPage() {
   const [match, setMatch] = useState<MatchDetails | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSubmittingAll, setIsSubmittingAll] = useState(false)
+  const [submitAllError, setSubmitAllError] = useState<string | null>(null)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null)
+  const [seenQuestionIds, setSeenQuestionIds] = useState<string[]>([])
+  const [codeForBroadcast, setCodeForBroadcast] = useState("")
+  const [currentLanguage, setCurrentLanguage] = useState("python")
+  const socketRef = useRef<Socket | null>(null)
+  const broadcastTimer = useRef<number | null>(null)
 
   useEffect(() => {
     if (typeof window === "undefined") return
     setCurrentUserId(window.localStorage.getItem("cnc.userId"))
   }, [])
+
+  useEffect(() => {
+    if (!matchId) return
+    let active = true
+
+    const initSocket = async () => {
+      await fetch("/api/socket")
+      const socket = io({ path: "/api/socket" })
+      socketRef.current = socket
+
+      socket.on("connect", () => {
+        if (!active) return
+      })
+    }
+
+    initSocket()
+
+    return () => {
+      active = false
+      socketRef.current?.disconnect()
+      socketRef.current = null
+    }
+  }, [matchId])
+
+  useEffect(() => {
+    if (!socketRef.current || !matchId || !currentUserId || !activeQuestionId) {
+      return
+    }
+
+    if (broadcastTimer.current) {
+      window.clearTimeout(broadcastTimer.current)
+    }
+
+    broadcastTimer.current = window.setTimeout(() => {
+      socketRef.current?.emit("arena:code", {
+        matchId,
+        userId: currentUserId,
+        questionId: activeQuestionId,
+        code: codeForBroadcast,
+      })
+    }, 400)
+
+    return () => {
+      if (broadcastTimer.current) {
+        window.clearTimeout(broadcastTimer.current)
+      }
+    }
+  }, [activeQuestionId, codeForBroadcast, currentUserId, matchId])
 
   useEffect(() => {
     if (!matchId) return
@@ -109,6 +166,24 @@ export default function ArenaPage() {
       active = false
     }
   }, [matchId])
+
+  useEffect(() => {
+    if (!match?.questions?.length) {
+      setActiveQuestionId(null)
+      setSeenQuestionIds([])
+      return
+    }
+    const firstId = match.questions[0].questionId
+    setActiveQuestionId(firstId)
+    setSeenQuestionIds([firstId])
+  }, [match?.id])
+
+  useEffect(() => {
+    if (!activeQuestionId) return
+    setSeenQuestionIds((prev) =>
+      prev.includes(activeQuestionId) ? prev : [...prev, activeQuestionId],
+    )
+  }, [activeQuestionId, match?.questions])
 
   const submissionStatus = useMemo(() => {
     const attempted = new Set<string>()
@@ -158,11 +233,13 @@ export default function ArenaPage() {
   const scoreboardQuestions = useMemo(() => {
     if (!match) return undefined
     return match.questions.map((mq, index) => {
-      let status: "solved" | "attempted" | "locked" = "locked"
+      let status: "solved" | "attempted" | "seen" | "locked" = "locked"
       if (submissionStatus.solved.has(mq.questionId)) {
         status = "solved"
       } else if (submissionStatus.attempted.has(mq.questionId)) {
         status = "attempted"
+      } else if (seenQuestionIds.includes(mq.questionId)) {
+        status = "seen"
       }
 
       const maxPoints =
@@ -172,6 +249,7 @@ export default function ArenaPage() {
 
       return {
         id: index + 1,
+        questionId: mq.questionId,
         title: mq.question.title,
         status,
         points,
@@ -179,9 +257,11 @@ export default function ArenaPage() {
         bonuses: [],
       }
     })
-  }, [match, submissionStatus])
+  }, [match, seenQuestionIds, submissionStatus])
 
-  const activeQuestion = match?.questions?.[0]?.question
+  const activeQuestion =
+    match?.questions.find((q) => q.questionId === activeQuestionId)?.question ??
+    match?.questions?.[0]?.question
   const activeExamples = Array.isArray(activeQuestion?.testCases)
     ? activeQuestion?.testCases
     : []
@@ -242,12 +322,80 @@ export default function ArenaPage() {
           {error}
         </div>
       )}
+      {submitAllError && (
+        <div className="border-b border-border bg-destructive/10 px-4 py-2 text-xs text-destructive">
+          {submitAllError}
+        </div>
+      )}
 
       {/* Main content area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Code editor - center/left */}
         <div className="relative flex flex-1 flex-col overflow-hidden p-2">
-          <CodeEditor problem={problem} />
+          <CodeEditor
+            problem={problem}
+            matchId={match?.id ?? matchId}
+            questionId={activeQuestionId}
+            problemTitle={activeQuestion?.title}
+            onCodeChange={(next) => setCodeForBroadcast(next)}
+            onLanguageChange={(next) => setCurrentLanguage(next)}
+            onSubmissionRecorded={({ questionId, testsPassed, testsTotal }) => {
+              setMatch((prev) => {
+                if (!prev) return prev
+                const existing = prev.submissions.find(
+                  (s) => s.questionId === questionId,
+                )
+                const nextSubmission = {
+                  questionId,
+                  testsPassed,
+                  testsTotal,
+                }
+                const submissions = existing
+                  ? prev.submissions.map((s) =>
+                      s.questionId === questionId ? nextSubmission : s,
+                    )
+                  : [...prev.submissions, nextSubmission]
+
+                const ordered = [...prev.questions].sort(
+                  (a, b) => a.order - b.order,
+                )
+                const currentIndex = ordered.findIndex(
+                  (q) => q.questionId === questionId,
+                )
+                const attempted = new Set(
+                  submissions.map((s) => s.questionId),
+                )
+
+                let nextId: string | null = null
+                for (let i = currentIndex + 1; i < ordered.length; i += 1) {
+                  if (!attempted.has(ordered[i].questionId)) {
+                    nextId = ordered[i].questionId
+                    break
+                  }
+                }
+                if (!nextId) {
+                  for (let i = 0; i < ordered.length; i += 1) {
+                    if (!attempted.has(ordered[i].questionId)) {
+                      nextId = ordered[i].questionId
+                      break
+                    }
+                  }
+                }
+
+                if (nextId) {
+                  setActiveQuestionId(nextId)
+                } else {
+                  if (matchId) {
+                    window.location.href = `/arena/spectate?match=${matchId}`
+                  } else {
+                    window.location.href = "/arena/spectate"
+                  }
+                }
+
+                return { ...prev, submissions }
+              })
+            }}
+          />
           {isLoading && (
             <div className="absolute bottom-4 left-4 rounded-sm border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground">
               Loading match...
@@ -264,6 +412,110 @@ export default function ArenaPage() {
                 ? scoreboardQuestions
                 : undefined
             }
+            activeQuestionId={activeQuestionId}
+            onSelectQuestion={(questionId) => setActiveQuestionId(questionId)}
+            actionLabel="Submit All Codes"
+            actionDisabled={isSubmittingAll}
+            actionLoading={isSubmittingAll}
+            onAction={async () => {
+              if (!matchId || !match) {
+                setSubmitAllError("Match not loaded.")
+                return
+              }
+              setSubmitAllError(null)
+              setIsSubmittingAll(true)
+              try {
+                if (
+                  typeof window !== "undefined" &&
+                  activeQuestionId &&
+                  activeQuestion?.title
+                ) {
+                  window.localStorage.setItem(
+                    activeQuestion.title,
+                    codeForBroadcast,
+                  )
+                }
+                const ordered = [...match.questions].sort(
+                  (a, b) => a.order - b.order,
+                )
+                const submissions: MatchSubmission[] = []
+                const failures: string[] = []
+
+                const placeholderForLanguage = (lang: string) => {
+                  const key = lang.toLowerCase()
+                  if (key.includes("python")) return "# no code submitted\n"
+                  if (key.includes("javascript") || key === "js")
+                    return "// no code submitted\n"
+                  if (key.includes("typescript") || key === "ts")
+                    return "// no code submitted\n"
+                  if (key === "java")
+                    return "public class Main { public static void main(String[] args) {} }\n"
+                  if (key.includes("c++") || key.includes("cpp"))
+                    return "#include <bits/stdc++.h>\nint main(){return 0;}\n"
+                  if (key === "c") return "#include <stdio.h>\nint main(){return 0;}\n"
+                  if (key.includes("go"))
+                    return "package main\nfunc main(){}\n"
+                  if (key.includes("rust"))
+                    return "fn main() {}\n"
+                  return "// no code submitted\n"
+                }
+
+                for (const item of ordered) {
+                  const title = item.question.title
+                  const code =
+                    typeof window !== "undefined"
+                      ? window.localStorage.getItem(title) ?? ""
+                      : ""
+                  const finalCode =
+                    code.trim().length > 0
+                      ? code
+                      : placeholderForLanguage(currentLanguage || "python")
+
+                  const res = await fetch(`/api/match/${matchId}/submit`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      questionId: item.questionId,
+                      code: finalCode,
+                      language: currentLanguage || "python",
+                    }),
+                  })
+                  const payload = await res.json().catch(() => ({}))
+                  if (!res.ok) {
+                    failures.push(
+                      `${title}: ${payload?.error || "submit failed"}`,
+                    )
+                    continue
+                  }
+                  submissions.push({
+                    questionId: item.questionId,
+                    testsPassed: payload?.submission?.testsPassed ?? 0,
+                    testsTotal: payload?.submission?.testsTotal ?? 0,
+                  })
+                }
+
+                if (submissions.length > 0) {
+                  setMatch((prev) =>
+                    prev ? { ...prev, submissions } : prev,
+                  )
+                }
+
+                if (failures.length > 0) {
+                  setSubmitAllError(
+                    `Some submissions failed: ${failures.join(", ")}`,
+                  )
+                  return
+                }
+
+                window.location.href = `/arena/submitted?match=${matchId}`
+              } catch (err) {
+                setSubmitAllError(
+                  err instanceof Error ? err.message : "Submit all failed.",
+                )
+              } finally {
+                setIsSubmittingAll(false)
+              }
+            }}
           />
         </div>
       </div>

@@ -106,11 +106,12 @@ export function UsersPanel({ users: usersProp }: UsersPanelProps) {
               </div>
 
               {/* Info */}
-              <div className="flex flex-1 flex-col">
+              <div className="flex min-w-0 flex-1 flex-col">
                 <span
                   className={`text-xs font-bold ${
                     user.id === "1" ? "text-primary" : "text-foreground"
-                  }`}
+                  } truncate`}
+                  title={user.name}
                 >
                   {user.name}
                 </span>
@@ -119,13 +120,15 @@ export function UsersPanel({ users: usersProp }: UsersPanelProps) {
                 </span>
               </div>
 
-              {/* Status */}
-              <div className="flex items-center gap-1.5">
-                <div className={`h-1.5 w-1.5 rounded-full ${sc.dotClass}`} />
-                <span className="text-xs text-muted-foreground">{sc.label}</span>
-              </div>
-              <div className="ml-2 text-xs text-muted-foreground">
-                {user.solved}/{user.total}
+              <div className="flex flex-shrink-0 items-center gap-3">
+                {/* Status */}
+                <div className="flex items-center gap-1.5">
+                  <div className={`h-1.5 w-1.5 rounded-full ${sc.dotClass}`} />
+                  <span className="text-xs text-muted-foreground">{sc.label}</span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {user.solved}/{user.total}
+                </div>
               </div>
             </div>
           )
