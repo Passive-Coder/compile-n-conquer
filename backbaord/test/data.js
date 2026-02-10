@@ -12,7 +12,7 @@ const QUESTIONS = [
 
 const PLAYERS = [
   {
-    name: 'Player1',
+    name: 'Player1', 
     answers: [
       {
         question: QUESTIONS[0],
