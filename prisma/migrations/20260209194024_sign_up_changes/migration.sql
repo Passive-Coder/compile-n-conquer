@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "streak" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "title" TEXT NOT NULL DEFAULT 'Code Warrior',
+ADD COLUMN     "totalXP" INTEGER NOT NULL DEFAULT 0;
