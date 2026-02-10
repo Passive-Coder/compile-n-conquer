@@ -535,6 +535,17 @@ export default function ArenaPage() {
                   return
                 }
 
+                const evalRes = await fetch(`/api/match/${matchId}/evaluate`, {
+                  method: "POST",
+                })
+                const evalPayload = await evalRes.json().catch(() => ({}))
+                if (!evalRes.ok) {
+                  setSubmitAllError(
+                    evalPayload?.error || "Evaluation dispatch failed.",
+                  )
+                  return
+                }
+
                 window.location.href = `/arena/submitted?match=${matchId}`
               } catch (err) {
                 setSubmitAllError(
