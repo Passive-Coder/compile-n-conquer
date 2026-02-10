@@ -96,7 +96,7 @@ export function PointsPanel({
       {/* Header with total */}
       <div className="flex items-center justify-between border-b border-border px-3 py-2">
         <span className="text-xs uppercase tracking-widest text-primary">
-          Scoreboard
+          Questions
         </span>
         <div className="flex items-center gap-1.5">
           <Trophy className="h-3 w-3 text-primary" />
@@ -169,7 +169,7 @@ export function PointsPanel({
       </div>
 
       {/* Summary footer */}
-      <div className="flex items-center justify-between border-t border-border px-3 py-2">
+      {/* <div className="flex items-center justify-between border-t border-border px-3 py-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <Star className="h-3 w-3 text-primary" />
@@ -181,7 +181,7 @@ export function PointsPanel({
           </div>
         </div>
         <span className="text-xs font-bold text-primary">+85 XP bonus</span>
-      </div>
+      </div> */}
 
       {actionLabel && onAction && (
         <div className="border-t border-border px-3 py-3">

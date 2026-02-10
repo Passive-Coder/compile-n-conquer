@@ -126,9 +126,6 @@ export function UsersPanel({ users: usersProp }: UsersPanelProps) {
                   <div className={`h-1.5 w-1.5 rounded-full ${sc.dotClass}`} />
                   <span className="text-xs text-muted-foreground">{sc.label}</span>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {user.solved}/{user.total}
-                </div>
               </div>
             </div>
           )

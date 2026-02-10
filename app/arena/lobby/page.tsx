@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Terminal, ArrowLeft, Users, PlusCircle } from "lucide-react"
 import { io, type Socket } from "socket.io-client"
+import { getAuthHeaders } from "@/lib/client-auth"
 
 type LobbyPlayer = {
   userId: string
@@ -74,7 +75,7 @@ export default function LobbyPage() {
     let active = true
 
     const initSocket = async () => {
-      await fetch("/api/socket")
+      await fetch("/api/socket", { headers: getAuthHeaders() })
       const socket = io({ path: "/api/socket" })
       socketRef.current = socket
 
@@ -136,7 +137,9 @@ export default function LobbyPage() {
 
   const refreshAvailable = async () => {
     try {
-      const res = await fetch("/api/match/available")
+      const res = await fetch("/api/match/available", {
+        headers: getAuthHeaders(),
+      })
       if (!res.ok) return
       const payload = await res.json().catch(() => ({}))
       if (payload?.matches) {
@@ -149,7 +152,9 @@ export default function LobbyPage() {
 
   const refreshMatch = async (matchId: string) => {
     try {
-      const res = await fetch(`/api/match/${matchId}`)
+      const res = await fetch(`/api/match/${matchId}`, {
+        headers: getAuthHeaders(),
+      })
       if (!res.ok) return
       const payload = await res.json().catch(() => ({}))
       if (payload?.match) {
@@ -187,7 +192,10 @@ export default function LobbyPage() {
     try {
       const res = await fetch("/api/match/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify({}),
       })
       const payload = await res.json().catch(() => ({}))
@@ -211,7 +219,10 @@ export default function LobbyPage() {
     try {
       const res = await fetch("/api/match/join", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify({ matchId }),
       })
       const payload = await res.json().catch(() => ({}))
