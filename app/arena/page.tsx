@@ -8,6 +8,7 @@ import { PointsPanel } from "@/components/arena/points-panel"
 import { Terminal, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { io, type Socket } from "socket.io-client"
+import { getAuthHeaders, getCachedUserId } from "@/lib/client-auth"
 
 type MatchQuestion = {
   questionId: string
@@ -18,6 +19,7 @@ type MatchQuestion = {
     description: string
     difficulty: "EASY" | "MEDIUM" | "HARD"
     testCases?: Array<{ input: string; expectedOutput: string }>
+    hiddenTestCases?: Array<{ input: string; expectedOutput: string }>
   }
 }
 
@@ -81,10 +83,13 @@ export default function ArenaPage() {
   const [currentLanguage, setCurrentLanguage] = useState("python")
   const socketRef = useRef<Socket | null>(null)
   const broadcastTimer = useRef<number | null>(null)
+  const [activityByUser, setActivityByUser] = useState<Record<string, number>>({})
+  const [activityTick, setActivityTick] = useState(0)
+  const codingWindowMs = 5000
 
   useEffect(() => {
     if (typeof window === "undefined") return
-    setCurrentUserId(window.localStorage.getItem("cnc.userId"))
+    setCurrentUserId(getCachedUserId())
   }, [])
 
   useEffect(() => {
@@ -92,13 +97,24 @@ export default function ArenaPage() {
     let active = true
 
     const initSocket = async () => {
-      await fetch("/api/socket")
+      await fetch("/api/socket", { headers: getAuthHeaders() })
       const socket = io({ path: "/api/socket" })
       socketRef.current = socket
 
       socket.on("connect", () => {
         if (!active) return
       })
+
+      socket.on(
+        "arena:code",
+        (payload: { matchId: string; userId: string }) => {
+          if (!active || payload.matchId !== matchId) return
+          setActivityByUser((prev) => ({
+            ...prev,
+            [payload.userId]: Date.now(),
+          }))
+        },
+      )
     }
 
     initSocket()
@@ -109,6 +125,13 @@ export default function ArenaPage() {
       socketRef.current = null
     }
   }, [matchId])
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActivityTick(Date.now())
+    }, 1500)
+    return () => window.clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     if (!socketRef.current || !matchId || !currentUserId || !activeQuestionId) {
@@ -136,6 +159,14 @@ export default function ArenaPage() {
   }, [activeQuestionId, codeForBroadcast, currentUserId, matchId])
 
   useEffect(() => {
+    if (!currentUserId) return
+    setActivityByUser((prev) => ({
+      ...prev,
+      [currentUserId]: Date.now(),
+    }))
+  }, [codeForBroadcast, currentUserId])
+
+  useEffect(() => {
     if (!matchId) return
     let active = true
 
@@ -144,7 +175,7 @@ export default function ArenaPage() {
       setError(null)
       try {
         const res = await fetch(`/api/match/${matchId}`, {
-          credentials: "include",
+          headers: getAuthHeaders(),
         })
         const payload = await res.json().catch(() => ({}))
         if (!res.ok) {
@@ -216,15 +247,19 @@ export default function ArenaPage() {
 
   const users = useMemo(() => {
     if (!match) return undefined
+    const now = activityTick || Date.now()
     return match.players.map((player, index) => {
       const display = player.user.displayName || player.user.username
       const avatar = display?.trim()?.[0]?.toUpperCase() || "U"
       const isCurrent = currentUserId === player.userId
+      const lastActive = activityByUser[player.userId]
+      const status =
+        lastActive && now - lastActive < codingWindowMs ? "coding" : "idle"
       return {
         id: player.userId,
         name: display,
         avatar,
-        status: "coding" as const,
+        status: status as "coding" | "idle",
         rank: player.rank ?? index + 1,
         rating: player.user.elo,
         solved: isCurrent ? solvedCount : 0,
@@ -232,7 +267,13 @@ export default function ArenaPage() {
         color: playerColors[index % playerColors.length],
       }
     })
-  }, [currentUserId, match, solvedCount, totalQuestions])
+  }, [activityByUser, activityTick, codingWindowMs, currentUserId, match, solvedCount, totalQuestions])
+
+  const currentPlayerName = useMemo(() => {
+    if (!match || !currentUserId) return null
+    const current = match.players.find((player) => player.userId === currentUserId)
+    return current?.user.displayName || current?.user.username || null
+  }, [currentUserId, match])
 
   const scoreboardQuestions = useMemo(() => {
     if (!match) return undefined
@@ -269,6 +310,9 @@ export default function ArenaPage() {
   const activeExamples = Array.isArray(activeQuestion?.testCases)
     ? activeQuestion?.testCases
     : []
+  const activeHiddenTests = Array.isArray(activeQuestion?.hiddenTestCases)
+    ? activeQuestion?.hiddenTestCases
+    : []
   const problem = activeQuestion
     ? {
         title: activeQuestion.title,
@@ -276,6 +320,10 @@ export default function ArenaPage() {
         difficulty: formatDifficulty(activeQuestion.difficulty),
         tag: `Q1 / ${totalQuestions || 1}`,
         examples: activeExamples.slice(0, 2).map((tc) => ({
+          input: String(tc.input),
+          output: String(tc.expectedOutput),
+        })),
+        hiddenTests: activeHiddenTests.map((tc) => ({
           input: String(tc.input),
           output: String(tc.expectedOutput),
         })),
@@ -312,6 +360,11 @@ export default function ArenaPage() {
           <span className="text-xs text-muted-foreground">
             Mode: Code from Scratch
           </span>
+          {currentPlayerName && (
+            <span className="text-xs font-semibold text-primary">
+              {currentPlayerName}
+            </span>
+          )}
           <Link
             href="/profile"
             className="flex h-7 w-7 items-center justify-center rounded-sm border border-primary/30 bg-primary/10 text-xs font-bold text-primary"
@@ -456,12 +509,16 @@ export default function ArenaPage() {
                     currentPlayer?.user.username ||
                     ""
 
-                  window.localStorage.clear()
+                  match.questions.forEach((item) => {
+                    window.localStorage.removeItem(item.question.title)
+                  })
                   if (currentUserId) {
                     window.localStorage.setItem("cnc.userId", currentUserId)
+                    window.sessionStorage.setItem("cnc.userId", currentUserId)
                   }
                   if (userName) {
                     window.localStorage.setItem("cnc.userName", userName)
+                    window.sessionStorage.setItem("cnc.userName", userName)
                   }
                 }
 
@@ -501,7 +558,10 @@ export default function ArenaPage() {
 
                   const res = await fetch(`/api/match/${matchId}/submit`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                      "Content-Type": "application/json",
+                      ...getAuthHeaders(),
+                    },
                     body: JSON.stringify({
                       questionId: item.questionId,
                       code: finalCode,

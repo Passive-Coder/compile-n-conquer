@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Play, RotateCcw, ChevronDown } from "lucide-react"
 import dynamic from "next/dynamic"
+import { getAuthHeaders } from "@/lib/client-auth"
 
 const MonacoEditor = dynamic(
   () => import("@monaco-editor/react").then((mod) => mod.default),
@@ -161,29 +162,13 @@ const outputFromResult = (result: PistonExecuteResponse) => {
   return "No output produced."
 }
 
-const problemStatement = {
-  title: "Two Sum",
-  difficulty: "Easy",
-  tag: "Q1 / 5",
-  description:
-    "Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution.",
-  examples: [
-    { input: "nums = [2,7,11,15], target = 9", output: "[0, 1]" },
-    { input: "nums = [3,2,4], target = 6", output: "[1, 2]" },
-  ],
-  constraints: [
-    "2 <= nums.length <= 10^4",
-    "-10^9 <= nums[i] <= 10^9",
-    "Only one valid answer exists.",
-  ],
-}
-
 type CodeEditorProblem = {
   title: string
   difficulty?: string
   tag?: string
   description: string
   examples?: { input: string; output: string }[]
+  hiddenTests?: { input: string; output: string }[]
   constraints?: string[]
 }
 
@@ -237,13 +222,25 @@ export function CodeEditor({
       status: "pass" | "fail" | "error" | "idle"
     }>
   >([])
+  const [isRunningHidden, setIsRunningHidden] = useState(false)
+  const [hiddenError, setHiddenError] = useState<string | null>(null)
+  const [hiddenResults, setHiddenResults] = useState<
+    Array<{
+      status: "pass" | "fail" | "error" | "idle"
+    }>
+  >([])
   const [submissionCache, setSubmissionCache] = useState<SubmissionCacheItem[]>(
     [],
   )
-  const activeProblem = problem ?? problemStatement
-  const problemTag = activeProblem.tag ?? problemStatement.tag
-  const problemDifficulty =
-    activeProblem.difficulty ?? problemStatement.difficulty
+  const activeProblem = problem
+  const problemTag = activeProblem?.tag
+  const problemDifficulty = activeProblem?.difficulty
+  const activeTitle = activeProblem?.title ?? "Problem"
+  const activeDescription =
+    activeProblem?.description ?? "Loading problem..."
+  const activeExamples = activeProblem?.examples ?? []
+  const activeHiddenTests = activeProblem?.hiddenTests ?? []
+  const activeConstraints = activeProblem?.constraints ?? []
   const difficultyClass = (() => {
     const normalized = problemDifficulty?.toLowerCase()
     if (normalized === "easy") {
@@ -260,7 +257,7 @@ export function CodeEditor({
   const saveTimerRef = useRef<number | null>(null)
   const lastTitleRef = useRef<string | null>(null)
 
-  const storageTitle = problemTitle ?? activeProblem.title
+  const storageTitle = problemTitle ?? activeProblem?.title ?? ""
 
   useEffect(() => {
     if (!storageTitle) return
@@ -414,10 +411,7 @@ export function CodeEditor({
 
   const handleRunSamples = async () => {
     setSampleError(null)
-    const examples =
-      activeProblem.examples && activeProblem.examples.length > 0
-        ? activeProblem.examples
-        : problemStatement.examples
+    const examples = activeExamples
 
     if (!examples || examples.length === 0) {
       setSampleError("No sample tests available for this question.")
@@ -493,6 +487,70 @@ export function CodeEditor({
     setIsRunningSamples(false)
   }
 
+  const handleRunHidden = async () => {
+    setHiddenError(null)
+    const hiddenTests = activeHiddenTests
+    if (!hiddenTests || hiddenTests.length === 0) {
+      setHiddenError("No hidden tests available for this question.")
+      return
+    }
+
+    if (!selectedRuntime) {
+      setHiddenError("No runtime available for the selected language.")
+      return
+    }
+
+    setIsRunningHidden(true)
+    setHiddenResults(
+      hiddenTests.map(() => ({
+        status: "idle",
+      })),
+    )
+
+    const fileName = fileNameForLanguage(language)
+    const results: Array<{
+      status: "pass" | "fail" | "error" | "idle"
+    }> = []
+
+    for (const test of hiddenTests) {
+      try {
+        const submissionRes = await fetch(`${PISTON_BASE}/execute`, {
+          method: "POST",
+          headers: {
+            ...baseHeaders,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            language: selectedRuntime.language,
+            version: selectedRuntime.version,
+            files: [
+              {
+                ...(fileName ? { name: fileName } : {}),
+                content: code,
+              },
+            ],
+            stdin: test.input ?? "",
+          }),
+        })
+
+        const execution = await jsonGuard<PistonExecuteResponse>(submissionRes)
+        const actual = (execution.run.stdout || execution.run.output || "").trim()
+        const expected = (test.output ?? "").trim()
+        const status = actual === expected ? "pass" : "fail"
+        results.push({
+          status,
+        })
+      } catch {
+        results.push({
+          status: "error",
+        })
+      }
+      setHiddenResults([...results])
+    }
+
+    setIsRunningHidden(false)
+  }
+
   const handleSubmit = async () => {
     setActiveTab("input")
     setOutput("Submitting...\n")
@@ -505,7 +563,7 @@ export function CodeEditor({
     try {
       const res = await fetch(`/api/match/${matchId}/submit`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({
           questionId,
           code,
@@ -530,7 +588,7 @@ export function CodeEditor({
       )
 
       const cacheItem: SubmissionCacheItem = {
-        problemTitle: problemTitle ?? activeProblem.title,
+        problemTitle: problemTitle ?? activeTitle,
         codeDescription: code,
         submittedAt: new Date().toISOString(),
         testsPassed: `${testsPassed}/${testsTotal}`,
@@ -590,7 +648,7 @@ export function CodeEditor({
               <div className="flex items-center gap-3">
                 <span className="text-xs text-primary">{problemTag}</span>
                 <h2 className="text-lg font-bold text-foreground">
-                  {activeProblem.title}
+                  {activeTitle}
                 </h2>
                 {problemDifficulty && (
                   <span className={`rounded-sm border px-2 py-0.5 text-xs ${difficultyClass}`}>
@@ -599,39 +657,35 @@ export function CodeEditor({
                 )}
               </div>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {activeProblem.description}
+                {activeDescription}
               </p>
               <div className="flex flex-col gap-3">
                 <span className="text-xs uppercase tracking-widest text-primary">
                   {"Examples"}
                 </span>
-                {(activeProblem.examples && activeProblem.examples.length > 0
-                  ? activeProblem.examples
-                  : problemStatement.examples
-                ).map((ex, i) => (
-                  <div
-                    key={i}
-                    className="rounded-sm border border-border bg-secondary/50 p-3"
-                  >
-                    <div className="text-xs text-muted-foreground">
-                      <span className="text-primary">{"Input: "}</span>
+                  {activeExamples.map((ex, i) => (
+                    <div
+                      key={i}
+                      className="rounded-sm border border-border bg-secondary/50 p-3"
+                    >
+                    <div className="text-xs text-primary">Input</div>
+                    <pre className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
                       {ex.input}
-                    </div>
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      <span className="text-primary">{"Output: "}</span>
+                    </pre>
+                    <div className="mt-2 text-xs text-primary">Output</div>
+                    <pre className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
                       {ex.output}
-                    </div>
+                    </pre>
                   </div>
                 ))}
               </div>
-              {activeProblem.constraints &&
-                activeProblem.constraints.length > 0 && (
+              {activeConstraints.length > 0 && (
                   <div className="flex flex-col gap-2">
                     <span className="text-xs uppercase tracking-widest text-primary">
                       {"Constraints"}
                     </span>
                     <ul className="flex flex-col gap-1">
-                      {activeProblem.constraints.map((c) => (
+                      {activeConstraints.map((c) => (
                         <li key={c} className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="text-primary">{">"}</span>
                           {c}
@@ -664,10 +718,7 @@ export function CodeEditor({
                 <div className="space-y-2">
                   {(sampleResults.length > 0
                     ? sampleResults
-                    : (activeProblem.examples && activeProblem.examples.length > 0
-                        ? activeProblem.examples
-                        : problemStatement.examples
-                      ).map((ex) => ({
+                    : activeExamples.map((ex) => ({
                         input: ex.input,
                         expected: ex.output,
                         status: "idle" as const,
@@ -701,22 +752,91 @@ export function CodeEditor({
                             : "NOT RUN"}
                         </span>
                       </div>
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        <span className="text-primary">{"Input: "}</span>
+                      <div className="mt-2 text-xs text-primary">Input</div>
+                      <pre className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
                         {result.input}
-                      </div>
-                      <div className="mt-1 text-xs text-muted-foreground">
-                        <span className="text-primary">{"Expected: "}</span>
+                      </pre>
+                      <div className="mt-2 text-xs text-primary">Expected</div>
+                      <pre className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
                         {result.expected}
-                      </div>
+                      </pre>
                       {result.status !== "idle" && (
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          <span className="text-primary">{"Actual: "}</span>
-                          {result.actual ?? ""}
-                        </div>
+                        <>
+                          <div className="mt-2 text-xs text-primary">Actual</div>
+                          <pre className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
+                            {result.actual ?? ""}
+                          </pre>
+                        </>
                       )}
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-widest text-primary">
+                    {"Hidden tests"}
+                  </span>
+                  <button
+                    onClick={handleRunHidden}
+                    disabled={isRunningHidden || isLoadingRuntimes}
+                    className="rounded-sm border border-border bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-foreground transition hover:border-primary hover:text-primary disabled:opacity-70"
+                  >
+                    {isRunningHidden ? "Running..." : "Run Hidden"}
+                  </button>
+                </div>
+
+                {hiddenError && (
+                  <div className="rounded-sm border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                    {hiddenError}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  {(hiddenResults.length > 0
+                    ? hiddenResults
+                    : activeHiddenTests.map(() => ({
+                        status: "idle" as const,
+                      }))
+                  ).map((result, index) => (
+                    <div
+                      key={`hidden-${index}`}
+                      className="rounded-sm border border-border bg-secondary/40 p-3 text-xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase tracking-widest text-muted-foreground">
+                          {"Hidden Case " + (index + 1)}
+                        </span>
+                        <span
+                          className={`rounded-sm border px-2 py-0.5 text-[10px] uppercase tracking-widest ${
+                            result.status === "pass"
+                              ? "border-primary/30 bg-primary/10 text-primary"
+                              : result.status === "fail"
+                              ? "border-yellow-500/30 bg-yellow-500/10 text-yellow-300"
+                              : result.status === "error"
+                              ? "border-rose-500/30 bg-rose-500/10 text-rose-300"
+                              : "border-border bg-secondary/60 text-muted-foreground"
+                          }`}
+                        >
+                          {result.status === "pass"
+                            ? "PASS"
+                            : result.status === "fail"
+                            ? "FAIL"
+                            : result.status === "error"
+                            ? "ERROR"
+                            : "NOT RUN"}
+                        </span>
+                      </div>
+                      <div className="mt-2 text-xs text-primary">Input</div>
+                      <pre className="mt-1 whitespace-pre-wrap text-xs text-muted-foreground">
+                        Hidden
+                      </pre>
+                    </div>
+                  ))}
+                  {!activeHiddenTests.length && (
+                    <div className="rounded-sm border border-border bg-secondary/40 p-3 text-xs text-muted-foreground">
+                      No hidden tests configured.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

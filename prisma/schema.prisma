@@ -140,6 +140,7 @@ model Question {
 
   // Test cases stored as JSON
   testCases  Json?    // [{ input: string, expectedOutput: string }]
+  hiddenTestCases Json? // [{ input: string, expectedOutput: string }]
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

@@ -60,6 +60,7 @@ export type QuestionCountAggregateOutputType = {
   brokenLanguage: number
   expectedOutput: number
   testCases: number
+  hiddenTestCases: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -102,6 +103,7 @@ export type QuestionCountAggregateInputType = {
   brokenLanguage?: true
   expectedOutput?: true
   testCases?: true
+  hiddenTestCases?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -189,6 +191,7 @@ export type QuestionGroupByOutputType = {
   brokenLanguage: string | null
   expectedOutput: string | null
   testCases: runtime.JsonValue | null
+  hiddenTestCases: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   _count: QuestionCountAggregateOutputType | null
@@ -224,6 +227,7 @@ export type QuestionWhereInput = {
   brokenLanguage?: Prisma.StringNullableFilter<"Question"> | string | null
   expectedOutput?: Prisma.StringNullableFilter<"Question"> | string | null
   testCases?: Prisma.JsonNullableFilter<"Question">
+  hiddenTestCases?: Prisma.JsonNullableFilter<"Question">
   createdAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   matchQuestions?: Prisma.MatchQuestionListRelationFilter
@@ -239,6 +243,7 @@ export type QuestionOrderByWithRelationInput = {
   brokenLanguage?: Prisma.SortOrderInput | Prisma.SortOrder
   expectedOutput?: Prisma.SortOrderInput | Prisma.SortOrder
   testCases?: Prisma.SortOrderInput | Prisma.SortOrder
+  hiddenTestCases?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   matchQuestions?: Prisma.MatchQuestionOrderByRelationAggregateInput
@@ -257,6 +262,7 @@ export type QuestionWhereUniqueInput = Prisma.AtLeast<{
   brokenLanguage?: Prisma.StringNullableFilter<"Question"> | string | null
   expectedOutput?: Prisma.StringNullableFilter<"Question"> | string | null
   testCases?: Prisma.JsonNullableFilter<"Question">
+  hiddenTestCases?: Prisma.JsonNullableFilter<"Question">
   createdAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   matchQuestions?: Prisma.MatchQuestionListRelationFilter
@@ -272,6 +278,7 @@ export type QuestionOrderByWithAggregationInput = {
   brokenLanguage?: Prisma.SortOrderInput | Prisma.SortOrder
   expectedOutput?: Prisma.SortOrderInput | Prisma.SortOrder
   testCases?: Prisma.SortOrderInput | Prisma.SortOrder
+  hiddenTestCases?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.QuestionCountOrderByAggregateInput
@@ -292,6 +299,7 @@ export type QuestionScalarWhereWithAggregatesInput = {
   brokenLanguage?: Prisma.StringNullableWithAggregatesFilter<"Question"> | string | null
   expectedOutput?: Prisma.StringNullableWithAggregatesFilter<"Question"> | string | null
   testCases?: Prisma.JsonNullableWithAggregatesFilter<"Question">
+  hiddenTestCases?: Prisma.JsonNullableWithAggregatesFilter<"Question">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Question"> | Date | string
 }
@@ -306,6 +314,7 @@ export type QuestionCreateInput = {
   brokenLanguage?: string | null
   expectedOutput?: string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   matchQuestions?: Prisma.MatchQuestionCreateNestedManyWithoutQuestionInput
@@ -321,6 +330,7 @@ export type QuestionUncheckedCreateInput = {
   brokenLanguage?: string | null
   expectedOutput?: string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   matchQuestions?: Prisma.MatchQuestionUncheckedCreateNestedManyWithoutQuestionInput
@@ -336,6 +346,7 @@ export type QuestionUpdateInput = {
   brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchQuestions?: Prisma.MatchQuestionUpdateManyWithoutQuestionNestedInput
@@ -351,6 +362,7 @@ export type QuestionUncheckedUpdateInput = {
   brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchQuestions?: Prisma.MatchQuestionUncheckedUpdateManyWithoutQuestionNestedInput
@@ -366,6 +378,7 @@ export type QuestionCreateManyInput = {
   brokenLanguage?: string | null
   expectedOutput?: string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -380,6 +393,7 @@ export type QuestionUpdateManyMutationInput = {
   brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -394,6 +408,7 @@ export type QuestionUncheckedUpdateManyInput = {
   brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -408,6 +423,7 @@ export type QuestionCountOrderByAggregateInput = {
   brokenLanguage?: Prisma.SortOrder
   expectedOutput?: Prisma.SortOrder
   testCases?: Prisma.SortOrder
+  hiddenTestCases?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -471,6 +487,7 @@ export type QuestionCreateWithoutMatchQuestionsInput = {
   brokenLanguage?: string | null
   expectedOutput?: string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -485,6 +502,7 @@ export type QuestionUncheckedCreateWithoutMatchQuestionsInput = {
   brokenLanguage?: string | null
   expectedOutput?: string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -515,6 +533,7 @@ export type QuestionUpdateWithoutMatchQuestionsInput = {
   brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -529,6 +548,7 @@ export type QuestionUncheckedUpdateWithoutMatchQuestionsInput = {
   brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  hiddenTestCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -574,6 +594,7 @@ export type QuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   brokenLanguage?: boolean
   expectedOutput?: boolean
   testCases?: boolean
+  hiddenTestCases?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   matchQuestions?: boolean | Prisma.Question$matchQuestionsArgs<ExtArgs>
@@ -590,6 +611,7 @@ export type QuestionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   brokenLanguage?: boolean
   expectedOutput?: boolean
   testCases?: boolean
+  hiddenTestCases?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["question"]>
@@ -604,6 +626,7 @@ export type QuestionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   brokenLanguage?: boolean
   expectedOutput?: boolean
   testCases?: boolean
+  hiddenTestCases?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["question"]>
@@ -618,11 +641,12 @@ export type QuestionSelectScalar = {
   brokenLanguage?: boolean
   expectedOutput?: boolean
   testCases?: boolean
+  hiddenTestCases?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "difficulty" | "mode" | "brokenCode" | "brokenLanguage" | "expectedOutput" | "testCases" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
+export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "difficulty" | "mode" | "brokenCode" | "brokenLanguage" | "expectedOutput" | "testCases" | "hiddenTestCases" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
 export type QuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   matchQuestions?: boolean | Prisma.Question$matchQuestionsArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionCountOutputTypeDefaultArgs<ExtArgs>
@@ -645,6 +669,7 @@ export type $QuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     brokenLanguage: string | null
     expectedOutput: string | null
     testCases: runtime.JsonValue | null
+    hiddenTestCases: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["question"]>
@@ -1080,6 +1105,7 @@ export interface QuestionFieldRefs {
   readonly brokenLanguage: Prisma.FieldRef<"Question", 'String'>
   readonly expectedOutput: Prisma.FieldRef<"Question", 'String'>
   readonly testCases: Prisma.FieldRef<"Question", 'Json'>
+  readonly hiddenTestCases: Prisma.FieldRef<"Question", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Question", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Question", 'DateTime'>
 }

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Terminal, Eye } from "lucide-react"
 import { io, type Socket } from "socket.io-client"
+import { getAuthHeaders } from "@/lib/client-auth"
 
 type MatchQuestion = {
   questionId: string
@@ -54,7 +55,7 @@ export default function SpectatePage() {
     const loadMatch = async () => {
       try {
         const res = await fetch(`/api/match/${matchId}`, {
-          credentials: "include",
+          headers: getAuthHeaders(),
         })
         const payload = await res.json().catch(() => ({}))
         if (!res.ok) {
@@ -82,7 +83,7 @@ export default function SpectatePage() {
     let active = true
 
     const initSocket = async () => {
-      await fetch("/api/socket")
+      await fetch("/api/socket", { headers: getAuthHeaders() })
       const socket = io({ path: "/api/socket" })
       socketRef.current = socket
 

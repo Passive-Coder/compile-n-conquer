@@ -1045,6 +1045,7 @@ export const QuestionScalarFieldEnum = {
   brokenLanguage: 'brokenLanguage',
   expectedOutput: 'expectedOutput',
   testCases: 'testCases',
+  hiddenTestCases: 'hiddenTestCases',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

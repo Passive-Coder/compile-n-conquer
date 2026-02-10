@@ -4,6 +4,7 @@ import { Terminal, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { cacheAuthSession } from "@/lib/client-auth"
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -14,9 +15,8 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  const cacheUserId = (userId: string) => {
-    if (typeof window === "undefined") return
-    window.localStorage.setItem("cnc.userId", userId)
+  const cacheUserId = (userId: string, userName?: string, token?: string) => {
+    cacheAuthSession({ userId, userName, token })
   }
 
   const handleGoogleSignIn = () => {
@@ -75,7 +75,11 @@ export default function AuthPage() {
         setError("Signup succeeded but user id was missing.")
         return
       }
-      cacheUserId(payload.user.id)
+      cacheUserId(
+        payload.user.id,
+        payload.user.displayName || payload.user.username,
+        payload.token,
+      )
       setStatus("Session initialized.")
       router.push("/profile")
     } catch (err) {
@@ -125,7 +129,11 @@ export default function AuthPage() {
         setError("Sign in succeeded but user id was missing.")
         return
       }
-      cacheUserId(payload.user.id)
+      cacheUserId(
+        payload.user.id,
+        payload.user.displayName || payload.user.username,
+        payload.token,
+      )
       setStatus("Access granted.")
       router.push("/profile")
     } catch (err) {

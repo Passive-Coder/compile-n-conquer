@@ -77,7 +77,30 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ match });
+    const normalizedQuestions = match.questions.map((entry) => {
+      const question = entry.question
+      const testCases = Array.isArray(question.testCases)
+        ? question.testCases
+        : []
+      const hiddenTestCases = Array.isArray(question.hiddenTestCases)
+        ? question.hiddenTestCases
+        : []
+      return {
+        ...entry,
+        question: {
+          ...question,
+          testCases,
+          hiddenTestCases,
+        },
+      }
+    })
+
+    return NextResponse.json({
+      match: {
+        ...match,
+        questions: normalizedQuestions,
+      },
+    });
   } catch (error) {
     console.error("Match fetch error:", error);
     return NextResponse.json(

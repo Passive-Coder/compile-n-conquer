@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Terminal, ArrowLeft, Trophy, Zap, Code, Target, Clock, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import { getAuthHeaders, getCachedUserId } from "@/lib/client-auth"
 
 type ProfileUser = {
   id: string
@@ -75,8 +76,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const cachedId =
-      typeof window !== "undefined" ? window.localStorage.getItem("cnc.userId") : null
+    const cachedId = getCachedUserId()
 
     if (!cachedId) {
       setError("No cached user found. Please sign in.")
@@ -86,7 +86,9 @@ export default function ProfilePage() {
 
     const loadProfile = async () => {
       try {
-        const response = await fetch(`/api/users/${cachedId}`)
+        const response = await fetch(`/api/users/${cachedId}`, {
+          headers: getAuthHeaders(),
+        })
         const payload = await response.json().catch(() => ({}))
         if (!response.ok) {
           setError(payload?.error || "Failed to load profile.")
