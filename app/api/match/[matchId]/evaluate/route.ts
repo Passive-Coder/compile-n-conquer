@@ -51,15 +51,18 @@ export async function POST(
     const roundSubmissions = {
       roundId: matchId,
       questions: match.questions.map((mq) => ({
-        id: mq.question.id,
+        id: mq.question.title,
         title: mq.question.title,
         description: mq.question.description,
         difficulty: mq.question.difficulty.toLowerCase() as "easy" | "medium" | "hard",
       })),
       submissions: match.players.map((player) => ({
-        userId: player.userId,
+        userId: player.user.displayName || player.user.username,
         responses: match.submissions
-          .filter((s) => s.userId === player.userId)
+          .filter(
+            (s) =>
+              s.userId === (player.user.displayName || player.user.username),
+          )
           .map((s) => ({
             questionId: s.questionId,
             code: s.code,
@@ -72,8 +75,9 @@ export async function POST(
     // For now, compute rankings based on test case results
     // The full Backboard LLM pipeline can be triggered async
     const playerScores = match.players.map((player) => {
+      const playerName = player.user.displayName || player.user.username;
       const playerSubmissions = match.submissions.filter(
-        (s) => s.userId === player.userId
+        (s) => s.userId === playerName
       );
 
       // Calculate average test pass rate

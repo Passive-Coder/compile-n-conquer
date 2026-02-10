@@ -33,7 +33,17 @@ export async function POST(
     const match = await prisma.match.findUnique({
       where: { id: matchId },
       include: {
-        players: true,
+        players: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                displayName: true,
+              },
+            },
+          },
+        },
         questions: { include: { question: true } },
       },
     });
@@ -50,7 +60,12 @@ export async function POST(
     }
 
     // Verify user is a player
-    const isPlayer = match.players.some((p) => p.userId === payload.userId);
+    const isPlayer = match.players.some(
+      (p) =>
+        p.userId === payload.userId ||
+        p.user.username === payload.username ||
+        p.user.displayName === payload.username,
+    );
     if (!isPlayer) {
       return NextResponse.json(
         { error: "You are not a player in this match" },
@@ -69,17 +84,65 @@ export async function POST(
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { username: true, displayName: true },
+    });
+    const userName = user?.displayName || user?.username || payload.username;
+
     // Save submission (no execution required)
     const submission = await prisma.submission.create({
       data: {
         matchId,
-        userId: payload.userId,
-        questionId,
+        userId: userName,
+        questionId: matchQuestion.question.title,
         code,
         language,
         charCount: code.length,
       },
     });
+
+    const questionTitles = match.questions.map((mq) => mq.question.title);
+    const questionTitleSet = new Set(questionTitles);
+    const playerNames = match.players.map(
+      (player) => player.user.displayName || player.user.username,
+    );
+
+    if (playerNames.length > 0 && questionTitles.length > 0) {
+      const submissions = await prisma.submission.findMany({
+        where: {
+          matchId,
+          userId: { in: playerNames },
+        },
+        select: {
+          userId: true,
+          questionId: true,
+        },
+      });
+
+      const progress = new Map<string, Set<string>>();
+      for (const entry of submissions) {
+        if (!questionTitleSet.has(entry.questionId)) continue;
+        if (!progress.has(entry.userId)) {
+          progress.set(entry.userId, new Set());
+        }
+        progress.get(entry.userId)?.add(entry.questionId);
+      }
+
+      const allCompleted = playerNames.every(
+        (name) => (progress.get(name)?.size ?? 0) >= questionTitles.length,
+      );
+
+      if (allCompleted) {
+        await prisma.match.update({
+          where: { id: matchId },
+          data: {
+            status: "COMPLETED",
+            endedAt: new Date(),
+          },
+        });
+      }
+    }
 
     return NextResponse.json({
       submission: {

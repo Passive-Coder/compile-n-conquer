@@ -369,8 +369,6 @@ export type SubmissionWhereInput = {
   relevanceScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
   submittedAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
   match?: Prisma.XOR<Prisma.MatchScalarRelationFilter, Prisma.MatchWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  question?: Prisma.XOR<Prisma.QuestionScalarRelationFilter, Prisma.QuestionWhereInput>
 }
 
 export type SubmissionOrderByWithRelationInput = {
@@ -395,8 +393,6 @@ export type SubmissionOrderByWithRelationInput = {
   relevanceScore?: Prisma.SortOrderInput | Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   match?: Prisma.MatchOrderByWithRelationInput
-  user?: Prisma.UserOrderByWithRelationInput
-  question?: Prisma.QuestionOrderByWithRelationInput
 }
 
 export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
@@ -424,8 +420,6 @@ export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
   relevanceScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
   submittedAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
   match?: Prisma.XOR<Prisma.MatchScalarRelationFilter, Prisma.MatchWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  question?: Prisma.XOR<Prisma.QuestionScalarRelationFilter, Prisma.QuestionWhereInput>
 }, "id">
 
 export type SubmissionOrderByWithAggregationInput = {
@@ -484,6 +478,8 @@ export type SubmissionScalarWhereWithAggregatesInput = {
 
 export type SubmissionCreateInput = {
   id?: string
+  userId: string
+  questionId: string
   code: string
   language: string
   charCount?: number | null
@@ -501,8 +497,6 @@ export type SubmissionCreateInput = {
   relevanceScore?: number | null
   submittedAt?: Date | string
   match: Prisma.MatchCreateNestedOneWithoutSubmissionsInput
-  user: Prisma.UserCreateNestedOneWithoutSubmissionsInput
-  question: Prisma.QuestionCreateNestedOneWithoutSubmissionsInput
 }
 
 export type SubmissionUncheckedCreateInput = {
@@ -530,6 +524,8 @@ export type SubmissionUncheckedCreateInput = {
 
 export type SubmissionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  questionId?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -547,8 +543,6 @@ export type SubmissionUpdateInput = {
   relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   match?: Prisma.MatchUpdateOneRequiredWithoutSubmissionsNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutSubmissionsNestedInput
-  question?: Prisma.QuestionUpdateOneRequiredWithoutSubmissionsNestedInput
 }
 
 export type SubmissionUncheckedUpdateInput = {
@@ -599,6 +593,8 @@ export type SubmissionCreateManyInput = {
 
 export type SubmissionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  questionId?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -743,48 +739,6 @@ export type SubmissionSumOrderByAggregateInput = {
   relevanceScore?: Prisma.SortOrder
 }
 
-export type SubmissionCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutUserInput, Prisma.SubmissionUncheckedCreateWithoutUserInput> | Prisma.SubmissionCreateWithoutUserInput[] | Prisma.SubmissionUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutUserInput | Prisma.SubmissionCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.SubmissionCreateManyUserInputEnvelope
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-}
-
-export type SubmissionUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutUserInput, Prisma.SubmissionUncheckedCreateWithoutUserInput> | Prisma.SubmissionCreateWithoutUserInput[] | Prisma.SubmissionUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutUserInput | Prisma.SubmissionCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.SubmissionCreateManyUserInputEnvelope
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-}
-
-export type SubmissionUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutUserInput, Prisma.SubmissionUncheckedCreateWithoutUserInput> | Prisma.SubmissionCreateWithoutUserInput[] | Prisma.SubmissionUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutUserInput | Prisma.SubmissionCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutUserInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.SubmissionCreateManyUserInputEnvelope
-  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutUserInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutUserInput | Prisma.SubmissionUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
-}
-
-export type SubmissionUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutUserInput, Prisma.SubmissionUncheckedCreateWithoutUserInput> | Prisma.SubmissionCreateWithoutUserInput[] | Prisma.SubmissionUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutUserInput | Prisma.SubmissionCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutUserInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.SubmissionCreateManyUserInputEnvelope
-  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutUserInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutUserInput | Prisma.SubmissionUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
-}
-
 export type SubmissionCreateNestedManyWithoutMatchInput = {
   create?: Prisma.XOR<Prisma.SubmissionCreateWithoutMatchInput, Prisma.SubmissionUncheckedCreateWithoutMatchInput> | Prisma.SubmissionCreateWithoutMatchInput[] | Prisma.SubmissionUncheckedCreateWithoutMatchInput[]
   connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutMatchInput | Prisma.SubmissionCreateOrConnectWithoutMatchInput[]
@@ -827,73 +781,9 @@ export type SubmissionUncheckedUpdateManyWithoutMatchNestedInput = {
   deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
 }
 
-export type SubmissionCreateNestedManyWithoutQuestionInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutQuestionInput, Prisma.SubmissionUncheckedCreateWithoutQuestionInput> | Prisma.SubmissionCreateWithoutQuestionInput[] | Prisma.SubmissionUncheckedCreateWithoutQuestionInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutQuestionInput | Prisma.SubmissionCreateOrConnectWithoutQuestionInput[]
-  createMany?: Prisma.SubmissionCreateManyQuestionInputEnvelope
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-}
-
-export type SubmissionUncheckedCreateNestedManyWithoutQuestionInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutQuestionInput, Prisma.SubmissionUncheckedCreateWithoutQuestionInput> | Prisma.SubmissionCreateWithoutQuestionInput[] | Prisma.SubmissionUncheckedCreateWithoutQuestionInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutQuestionInput | Prisma.SubmissionCreateOrConnectWithoutQuestionInput[]
-  createMany?: Prisma.SubmissionCreateManyQuestionInputEnvelope
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-}
-
-export type SubmissionUpdateManyWithoutQuestionNestedInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutQuestionInput, Prisma.SubmissionUncheckedCreateWithoutQuestionInput> | Prisma.SubmissionCreateWithoutQuestionInput[] | Prisma.SubmissionUncheckedCreateWithoutQuestionInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutQuestionInput | Prisma.SubmissionCreateOrConnectWithoutQuestionInput[]
-  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutQuestionInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutQuestionInput[]
-  createMany?: Prisma.SubmissionCreateManyQuestionInputEnvelope
-  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutQuestionInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutQuestionInput[]
-  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutQuestionInput | Prisma.SubmissionUpdateManyWithWhereWithoutQuestionInput[]
-  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
-}
-
-export type SubmissionUncheckedUpdateManyWithoutQuestionNestedInput = {
-  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutQuestionInput, Prisma.SubmissionUncheckedCreateWithoutQuestionInput> | Prisma.SubmissionCreateWithoutQuestionInput[] | Prisma.SubmissionUncheckedCreateWithoutQuestionInput[]
-  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutQuestionInput | Prisma.SubmissionCreateOrConnectWithoutQuestionInput[]
-  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutQuestionInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutQuestionInput[]
-  createMany?: Prisma.SubmissionCreateManyQuestionInputEnvelope
-  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
-  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutQuestionInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutQuestionInput[]
-  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutQuestionInput | Prisma.SubmissionUpdateManyWithWhereWithoutQuestionInput[]
-  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
-}
-
-export type SubmissionCreateWithoutUserInput = {
+export type SubmissionCreateWithoutMatchInput = {
   id?: string
-  code: string
-  language: string
-  charCount?: number | null
-  stdout?: string | null
-  stderr?: string | null
-  exitCode?: number | null
-  execTimeMs?: number | null
-  testsPassed?: number
-  testsTotal?: number
-  timeComplexity?: string | null
-  timeScore?: number | null
-  spaceComplexity?: string | null
-  spaceScore?: number | null
-  originalityScore?: number | null
-  relevanceScore?: number | null
-  submittedAt?: Date | string
-  match: Prisma.MatchCreateNestedOneWithoutSubmissionsInput
-  question: Prisma.QuestionCreateNestedOneWithoutSubmissionsInput
-}
-
-export type SubmissionUncheckedCreateWithoutUserInput = {
-  id?: string
-  matchId: string
+  userId: string
   questionId: string
   code: string
   language: string
@@ -911,80 +801,6 @@ export type SubmissionUncheckedCreateWithoutUserInput = {
   originalityScore?: number | null
   relevanceScore?: number | null
   submittedAt?: Date | string
-}
-
-export type SubmissionCreateOrConnectWithoutUserInput = {
-  where: Prisma.SubmissionWhereUniqueInput
-  create: Prisma.XOR<Prisma.SubmissionCreateWithoutUserInput, Prisma.SubmissionUncheckedCreateWithoutUserInput>
-}
-
-export type SubmissionCreateManyUserInputEnvelope = {
-  data: Prisma.SubmissionCreateManyUserInput | Prisma.SubmissionCreateManyUserInput[]
-  skipDuplicates?: boolean
-}
-
-export type SubmissionUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.SubmissionWhereUniqueInput
-  update: Prisma.XOR<Prisma.SubmissionUpdateWithoutUserInput, Prisma.SubmissionUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.SubmissionCreateWithoutUserInput, Prisma.SubmissionUncheckedCreateWithoutUserInput>
-}
-
-export type SubmissionUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.SubmissionWhereUniqueInput
-  data: Prisma.XOR<Prisma.SubmissionUpdateWithoutUserInput, Prisma.SubmissionUncheckedUpdateWithoutUserInput>
-}
-
-export type SubmissionUpdateManyWithWhereWithoutUserInput = {
-  where: Prisma.SubmissionScalarWhereInput
-  data: Prisma.XOR<Prisma.SubmissionUpdateManyMutationInput, Prisma.SubmissionUncheckedUpdateManyWithoutUserInput>
-}
-
-export type SubmissionScalarWhereInput = {
-  AND?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
-  OR?: Prisma.SubmissionScalarWhereInput[]
-  NOT?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
-  id?: Prisma.StringFilter<"Submission"> | string
-  matchId?: Prisma.StringFilter<"Submission"> | string
-  userId?: Prisma.StringFilter<"Submission"> | string
-  questionId?: Prisma.StringFilter<"Submission"> | string
-  code?: Prisma.StringFilter<"Submission"> | string
-  language?: Prisma.StringFilter<"Submission"> | string
-  charCount?: Prisma.IntNullableFilter<"Submission"> | number | null
-  stdout?: Prisma.StringNullableFilter<"Submission"> | string | null
-  stderr?: Prisma.StringNullableFilter<"Submission"> | string | null
-  exitCode?: Prisma.IntNullableFilter<"Submission"> | number | null
-  execTimeMs?: Prisma.IntNullableFilter<"Submission"> | number | null
-  testsPassed?: Prisma.IntFilter<"Submission"> | number
-  testsTotal?: Prisma.IntFilter<"Submission"> | number
-  timeComplexity?: Prisma.StringNullableFilter<"Submission"> | string | null
-  timeScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
-  spaceComplexity?: Prisma.StringNullableFilter<"Submission"> | string | null
-  spaceScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
-  originalityScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
-  relevanceScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
-  submittedAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
-}
-
-export type SubmissionCreateWithoutMatchInput = {
-  id?: string
-  code: string
-  language: string
-  charCount?: number | null
-  stdout?: string | null
-  stderr?: string | null
-  exitCode?: number | null
-  execTimeMs?: number | null
-  testsPassed?: number
-  testsTotal?: number
-  timeComplexity?: string | null
-  timeScore?: number | null
-  spaceComplexity?: string | null
-  spaceScore?: number | null
-  originalityScore?: number | null
-  relevanceScore?: number | null
-  submittedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutSubmissionsInput
-  question: Prisma.QuestionCreateNestedOneWithoutSubmissionsInput
 }
 
 export type SubmissionUncheckedCreateWithoutMatchInput = {
@@ -1035,162 +851,30 @@ export type SubmissionUpdateManyWithWhereWithoutMatchInput = {
   data: Prisma.XOR<Prisma.SubmissionUpdateManyMutationInput, Prisma.SubmissionUncheckedUpdateManyWithoutMatchInput>
 }
 
-export type SubmissionCreateWithoutQuestionInput = {
-  id?: string
-  code: string
-  language: string
-  charCount?: number | null
-  stdout?: string | null
-  stderr?: string | null
-  exitCode?: number | null
-  execTimeMs?: number | null
-  testsPassed?: number
-  testsTotal?: number
-  timeComplexity?: string | null
-  timeScore?: number | null
-  spaceComplexity?: string | null
-  spaceScore?: number | null
-  originalityScore?: number | null
-  relevanceScore?: number | null
-  submittedAt?: Date | string
-  match: Prisma.MatchCreateNestedOneWithoutSubmissionsInput
-  user: Prisma.UserCreateNestedOneWithoutSubmissionsInput
-}
-
-export type SubmissionUncheckedCreateWithoutQuestionInput = {
-  id?: string
-  matchId: string
-  userId: string
-  code: string
-  language: string
-  charCount?: number | null
-  stdout?: string | null
-  stderr?: string | null
-  exitCode?: number | null
-  execTimeMs?: number | null
-  testsPassed?: number
-  testsTotal?: number
-  timeComplexity?: string | null
-  timeScore?: number | null
-  spaceComplexity?: string | null
-  spaceScore?: number | null
-  originalityScore?: number | null
-  relevanceScore?: number | null
-  submittedAt?: Date | string
-}
-
-export type SubmissionCreateOrConnectWithoutQuestionInput = {
-  where: Prisma.SubmissionWhereUniqueInput
-  create: Prisma.XOR<Prisma.SubmissionCreateWithoutQuestionInput, Prisma.SubmissionUncheckedCreateWithoutQuestionInput>
-}
-
-export type SubmissionCreateManyQuestionInputEnvelope = {
-  data: Prisma.SubmissionCreateManyQuestionInput | Prisma.SubmissionCreateManyQuestionInput[]
-  skipDuplicates?: boolean
-}
-
-export type SubmissionUpsertWithWhereUniqueWithoutQuestionInput = {
-  where: Prisma.SubmissionWhereUniqueInput
-  update: Prisma.XOR<Prisma.SubmissionUpdateWithoutQuestionInput, Prisma.SubmissionUncheckedUpdateWithoutQuestionInput>
-  create: Prisma.XOR<Prisma.SubmissionCreateWithoutQuestionInput, Prisma.SubmissionUncheckedCreateWithoutQuestionInput>
-}
-
-export type SubmissionUpdateWithWhereUniqueWithoutQuestionInput = {
-  where: Prisma.SubmissionWhereUniqueInput
-  data: Prisma.XOR<Prisma.SubmissionUpdateWithoutQuestionInput, Prisma.SubmissionUncheckedUpdateWithoutQuestionInput>
-}
-
-export type SubmissionUpdateManyWithWhereWithoutQuestionInput = {
-  where: Prisma.SubmissionScalarWhereInput
-  data: Prisma.XOR<Prisma.SubmissionUpdateManyMutationInput, Prisma.SubmissionUncheckedUpdateManyWithoutQuestionInput>
-}
-
-export type SubmissionCreateManyUserInput = {
-  id?: string
-  matchId: string
-  questionId: string
-  code: string
-  language: string
-  charCount?: number | null
-  stdout?: string | null
-  stderr?: string | null
-  exitCode?: number | null
-  execTimeMs?: number | null
-  testsPassed?: number
-  testsTotal?: number
-  timeComplexity?: string | null
-  timeScore?: number | null
-  spaceComplexity?: string | null
-  spaceScore?: number | null
-  originalityScore?: number | null
-  relevanceScore?: number | null
-  submittedAt?: Date | string
-}
-
-export type SubmissionUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stdout?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stderr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  exitCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  execTimeMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  testsPassed?: Prisma.IntFieldUpdateOperationsInput | number
-  testsTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  timeComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timeScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  spaceComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spaceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  originalityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  match?: Prisma.MatchUpdateOneRequiredWithoutSubmissionsNestedInput
-  question?: Prisma.QuestionUpdateOneRequiredWithoutSubmissionsNestedInput
-}
-
-export type SubmissionUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  matchId?: Prisma.StringFieldUpdateOperationsInput | string
-  questionId?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stdout?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stderr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  exitCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  execTimeMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  testsPassed?: Prisma.IntFieldUpdateOperationsInput | number
-  testsTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  timeComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timeScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  spaceComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spaceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  originalityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type SubmissionUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  matchId?: Prisma.StringFieldUpdateOperationsInput | string
-  questionId?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stdout?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stderr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  exitCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  execTimeMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  testsPassed?: Prisma.IntFieldUpdateOperationsInput | number
-  testsTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  timeComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timeScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  spaceComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spaceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  originalityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+export type SubmissionScalarWhereInput = {
+  AND?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+  OR?: Prisma.SubmissionScalarWhereInput[]
+  NOT?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+  id?: Prisma.StringFilter<"Submission"> | string
+  matchId?: Prisma.StringFilter<"Submission"> | string
+  userId?: Prisma.StringFilter<"Submission"> | string
+  questionId?: Prisma.StringFilter<"Submission"> | string
+  code?: Prisma.StringFilter<"Submission"> | string
+  language?: Prisma.StringFilter<"Submission"> | string
+  charCount?: Prisma.IntNullableFilter<"Submission"> | number | null
+  stdout?: Prisma.StringNullableFilter<"Submission"> | string | null
+  stderr?: Prisma.StringNullableFilter<"Submission"> | string | null
+  exitCode?: Prisma.IntNullableFilter<"Submission"> | number | null
+  execTimeMs?: Prisma.IntNullableFilter<"Submission"> | number | null
+  testsPassed?: Prisma.IntFilter<"Submission"> | number
+  testsTotal?: Prisma.IntFilter<"Submission"> | number
+  timeComplexity?: Prisma.StringNullableFilter<"Submission"> | string | null
+  timeScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
+  spaceComplexity?: Prisma.StringNullableFilter<"Submission"> | string | null
+  spaceScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
+  originalityScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
+  relevanceScore?: Prisma.FloatNullableFilter<"Submission"> | number | null
+  submittedAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
 }
 
 export type SubmissionCreateManyMatchInput = {
@@ -1217,6 +901,8 @@ export type SubmissionCreateManyMatchInput = {
 
 export type SubmissionUpdateWithoutMatchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  questionId?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1233,8 +919,6 @@ export type SubmissionUpdateWithoutMatchInput = {
   originalityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutSubmissionsNestedInput
-  question?: Prisma.QuestionUpdateOneRequiredWithoutSubmissionsNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutMatchInput = {
@@ -1281,94 +965,6 @@ export type SubmissionUncheckedUpdateManyWithoutMatchInput = {
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SubmissionCreateManyQuestionInput = {
-  id?: string
-  matchId: string
-  userId: string
-  code: string
-  language: string
-  charCount?: number | null
-  stdout?: string | null
-  stderr?: string | null
-  exitCode?: number | null
-  execTimeMs?: number | null
-  testsPassed?: number
-  testsTotal?: number
-  timeComplexity?: string | null
-  timeScore?: number | null
-  spaceComplexity?: string | null
-  spaceScore?: number | null
-  originalityScore?: number | null
-  relevanceScore?: number | null
-  submittedAt?: Date | string
-}
-
-export type SubmissionUpdateWithoutQuestionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stdout?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stderr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  exitCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  execTimeMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  testsPassed?: Prisma.IntFieldUpdateOperationsInput | number
-  testsTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  timeComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timeScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  spaceComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spaceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  originalityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  match?: Prisma.MatchUpdateOneRequiredWithoutSubmissionsNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutSubmissionsNestedInput
-}
-
-export type SubmissionUncheckedUpdateWithoutQuestionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  matchId?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stdout?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stderr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  exitCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  execTimeMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  testsPassed?: Prisma.IntFieldUpdateOperationsInput | number
-  testsTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  timeComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timeScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  spaceComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spaceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  originalityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type SubmissionUncheckedUpdateManyWithoutQuestionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  matchId?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  charCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  stdout?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stderr?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  exitCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  execTimeMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  testsPassed?: Prisma.IntFieldUpdateOperationsInput | number
-  testsTotal?: Prisma.IntFieldUpdateOperationsInput | number
-  timeComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  timeScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  spaceComplexity?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spaceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  originalityScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  relevanceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 
 
 export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1393,8 +989,6 @@ export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   relevanceScore?: boolean
   submittedAt?: boolean
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  question?: boolean | Prisma.QuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1419,8 +1013,6 @@ export type SubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   relevanceScore?: boolean
   submittedAt?: boolean
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  question?: boolean | Prisma.QuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1445,8 +1037,6 @@ export type SubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   relevanceScore?: boolean
   submittedAt?: boolean
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  question?: boolean | Prisma.QuestionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectScalar = {
@@ -1475,26 +1065,18 @@ export type SubmissionSelectScalar = {
 export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "matchId" | "userId" | "questionId" | "code" | "language" | "charCount" | "stdout" | "stderr" | "exitCode" | "execTimeMs" | "testsPassed" | "testsTotal" | "timeComplexity" | "timeScore" | "spaceComplexity" | "spaceScore" | "originalityScore" | "relevanceScore" | "submittedAt", ExtArgs["result"]["submission"]>
 export type SubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  question?: boolean | Prisma.QuestionDefaultArgs<ExtArgs>
 }
 export type SubmissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  question?: boolean | Prisma.QuestionDefaultArgs<ExtArgs>
 }
 export type SubmissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  question?: boolean | Prisma.QuestionDefaultArgs<ExtArgs>
 }
 
 export type $SubmissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Submission"
   objects: {
     match: Prisma.$MatchPayload<ExtArgs>
-    user: Prisma.$UserPayload<ExtArgs>
-    question: Prisma.$QuestionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1912,8 +1494,6 @@ readonly fields: SubmissionFieldRefs;
 export interface Prisma__SubmissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   match<T extends Prisma.MatchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MatchDefaultArgs<ExtArgs>>): Prisma.Prisma__MatchClient<runtime.Types.Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  question<T extends Prisma.QuestionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestionDefaultArgs<ExtArgs>>): Prisma.Prisma__QuestionClient<runtime.Types.Result.GetResult<Prisma.$QuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

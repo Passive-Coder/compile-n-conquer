@@ -188,16 +188,20 @@ export default function ArenaPage() {
   const submissionStatus = useMemo(() => {
     const attempted = new Set<string>()
     const solved = new Set<string>()
-    if (match?.submissions) {
+    if (match?.submissions && match?.questions) {
+      const titleToId = new Map(
+        match.questions.map((q) => [q.question.title, q.questionId]),
+      )
       match.submissions.forEach((s) => {
-        attempted.add(s.questionId)
+        const key = titleToId.get(s.questionId) ?? s.questionId
+        attempted.add(key)
         if (s.testsTotal > 0 && s.testsPassed === s.testsTotal) {
-          solved.add(s.questionId)
+          solved.add(key)
         }
       })
     }
     return { attempted, solved }
-  }, [match?.submissions])
+  }, [match?.questions, match?.submissions])
 
   const totalQuestions = match?.questions?.length ?? 0
   const solvedCount = useMemo(() => {
@@ -425,16 +429,42 @@ export default function ArenaPage() {
               setSubmitAllError(null)
               setIsSubmittingAll(true)
               try {
-                if (
-                  typeof window !== "undefined" &&
-                  activeQuestionId &&
-                  activeQuestion?.title
-                ) {
-                  window.localStorage.setItem(
-                    activeQuestion.title,
-                    codeForBroadcast,
+                let codeCache: Record<string, string> = {}
+                let userName = ""
+                if (typeof window !== "undefined") {
+                  if (activeQuestionId && activeQuestion?.title) {
+                    window.localStorage.setItem(
+                      activeQuestion.title,
+                      codeForBroadcast,
+                    )
+                  }
+
+                  codeCache = (match.questions || []).reduce(
+                    (acc, item) => {
+                      const title = item.question.title
+                      acc[title] = window.localStorage.getItem(title) ?? ""
+                      return acc
+                    },
+                    {} as Record<string, string>,
                   )
+
+                  const currentPlayer = match.players.find(
+                    (player) => player.userId === currentUserId,
+                  )
+                  userName =
+                    currentPlayer?.user.displayName ||
+                    currentPlayer?.user.username ||
+                    ""
+
+                  window.localStorage.clear()
+                  if (currentUserId) {
+                    window.localStorage.setItem("cnc.userId", currentUserId)
+                  }
+                  if (userName) {
+                    window.localStorage.setItem("cnc.userName", userName)
+                  }
                 }
+
                 const ordered = [...match.questions].sort(
                   (a, b) => a.order - b.order,
                 )
@@ -463,9 +493,7 @@ export default function ArenaPage() {
                 for (const item of ordered) {
                   const title = item.question.title
                   const code =
-                    typeof window !== "undefined"
-                      ? window.localStorage.getItem(title) ?? ""
-                      : ""
+                    typeof window !== "undefined" ? codeCache[title] ?? "" : ""
                   const finalCode =
                     code.trim().length > 0
                       ? code

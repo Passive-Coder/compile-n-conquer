@@ -19,6 +19,12 @@ export async function GET(
   const { matchId } = await params;
 
   try {
+    const viewer = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { username: true, displayName: true },
+    });
+    const viewerName = viewer?.displayName || viewer?.username || payload.username;
+
     const match = await prisma.match.findUnique({
       where: { id: matchId },
       include: {
@@ -40,7 +46,7 @@ export async function GET(
           orderBy: { order: "asc" },
         },
         submissions: {
-          where: { userId: payload.userId },
+          where: { userId: viewerName },
           select: {
             id: true,
             questionId: true,
@@ -59,7 +65,10 @@ export async function GET(
 
     // Verify user is a player in this match
     const isPlayer = match.players.some(
-      (p) => p.userId === payload.userId
+      (p) =>
+        p.userId === payload.userId ||
+        p.user.username === payload.username ||
+        p.user.displayName === payload.username,
     );
     if (!isPlayer) {
       return NextResponse.json(

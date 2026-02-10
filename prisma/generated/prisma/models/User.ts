@@ -312,7 +312,6 @@ export type UserWhereInput = {
   streak?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  submissions?: Prisma.SubmissionListRelationFilter
   matchPlayers?: Prisma.MatchPlayerListRelationFilter
   queueEntries?: Prisma.QueueEntryListRelationFilter
 }
@@ -333,7 +332,6 @@ export type UserOrderByWithRelationInput = {
   streak?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  submissions?: Prisma.SubmissionOrderByRelationAggregateInput
   matchPlayers?: Prisma.MatchPlayerOrderByRelationAggregateInput
   queueEntries?: Prisma.QueueEntryOrderByRelationAggregateInput
 }
@@ -357,7 +355,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   streak?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  submissions?: Prisma.SubmissionListRelationFilter
   matchPlayers?: Prisma.MatchPlayerListRelationFilter
   queueEntries?: Prisma.QueueEntryListRelationFilter
 }, "id" | "username" | "email">
@@ -422,7 +419,6 @@ export type UserCreateInput = {
   streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionCreateNestedManyWithoutUserInput
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutUserInput
   queueEntries?: Prisma.QueueEntryCreateNestedManyWithoutUserInput
 }
@@ -443,7 +439,6 @@ export type UserUncheckedCreateInput = {
   streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutUserInput
   queueEntries?: Prisma.QueueEntryUncheckedCreateNestedManyWithoutUserInput
 }
@@ -464,7 +459,6 @@ export type UserUpdateInput = {
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutUserNestedInput
   queueEntries?: Prisma.QueueEntryUpdateManyWithoutUserNestedInput
 }
@@ -485,7 +479,6 @@ export type UserUncheckedUpdateInput = {
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutUserNestedInput
   queueEntries?: Prisma.QueueEntryUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -671,20 +664,6 @@ export type UserUpdateOneRequiredWithoutMatchPlayersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMatchPlayersInput, Prisma.UserUpdateWithoutMatchPlayersInput>, Prisma.UserUncheckedUpdateWithoutMatchPlayersInput>
 }
 
-export type UserCreateNestedOneWithoutSubmissionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutSubmissionsInput, Prisma.UserUncheckedCreateWithoutSubmissionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubmissionsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutSubmissionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutSubmissionsInput, Prisma.UserUncheckedCreateWithoutSubmissionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubmissionsInput
-  upsert?: Prisma.UserUpsertWithoutSubmissionsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.UserUpdateWithoutSubmissionsInput>, Prisma.UserUncheckedUpdateWithoutSubmissionsInput>
-}
-
 export type UserCreateWithoutQueueEntriesInput = {
   id?: string
   username: string
@@ -701,7 +680,6 @@ export type UserCreateWithoutQueueEntriesInput = {
   streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionCreateNestedManyWithoutUserInput
   matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutUserInput
 }
 
@@ -721,7 +699,6 @@ export type UserUncheckedCreateWithoutQueueEntriesInput = {
   streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
   matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -757,7 +734,6 @@ export type UserUpdateWithoutQueueEntriesInput = {
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
   matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutUserNestedInput
 }
 
@@ -777,7 +753,6 @@ export type UserUncheckedUpdateWithoutQueueEntriesInput = {
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
   matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -797,7 +772,6 @@ export type UserCreateWithoutMatchPlayersInput = {
   streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionCreateNestedManyWithoutUserInput
   queueEntries?: Prisma.QueueEntryCreateNestedManyWithoutUserInput
 }
 
@@ -817,7 +791,6 @@ export type UserUncheckedCreateWithoutMatchPlayersInput = {
   streak?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
   queueEntries?: Prisma.QueueEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -853,7 +826,6 @@ export type UserUpdateWithoutMatchPlayersInput = {
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
   queueEntries?: Prisma.QueueEntryUpdateManyWithoutUserNestedInput
 }
 
@@ -873,103 +845,6 @@ export type UserUncheckedUpdateWithoutMatchPlayersInput = {
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
-  queueEntries?: Prisma.QueueEntryUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutSubmissionsInput = {
-  id?: string
-  username: string
-  email: string
-  passwordHash: string
-  displayName?: string | null
-  avatarUrl?: string | null
-  title?: string
-  skillTier?: $Enums.SkillTier
-  elo?: number
-  totalWins?: number
-  totalMatches?: number
-  totalXP?: number
-  streak?: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  matchPlayers?: Prisma.MatchPlayerCreateNestedManyWithoutUserInput
-  queueEntries?: Prisma.QueueEntryCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutSubmissionsInput = {
-  id?: string
-  username: string
-  email: string
-  passwordHash: string
-  displayName?: string | null
-  avatarUrl?: string | null
-  title?: string
-  skillTier?: $Enums.SkillTier
-  elo?: number
-  totalWins?: number
-  totalMatches?: number
-  totalXP?: number
-  streak?: number
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  matchPlayers?: Prisma.MatchPlayerUncheckedCreateNestedManyWithoutUserInput
-  queueEntries?: Prisma.QueueEntryUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutSubmissionsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutSubmissionsInput, Prisma.UserUncheckedCreateWithoutSubmissionsInput>
-}
-
-export type UserUpsertWithoutSubmissionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutSubmissionsInput, Prisma.UserUncheckedUpdateWithoutSubmissionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutSubmissionsInput, Prisma.UserUncheckedCreateWithoutSubmissionsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutSubmissionsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutSubmissionsInput, Prisma.UserUncheckedUpdateWithoutSubmissionsInput>
-}
-
-export type UserUpdateWithoutSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
-  elo?: Prisma.IntFieldUpdateOperationsInput | number
-  totalWins?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
-  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
-  streak?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  matchPlayers?: Prisma.MatchPlayerUpdateManyWithoutUserNestedInput
-  queueEntries?: Prisma.QueueEntryUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  skillTier?: Prisma.EnumSkillTierFieldUpdateOperationsInput | $Enums.SkillTier
-  elo?: Prisma.IntFieldUpdateOperationsInput | number
-  totalWins?: Prisma.IntFieldUpdateOperationsInput | number
-  totalMatches?: Prisma.IntFieldUpdateOperationsInput | number
-  totalXP?: Prisma.IntFieldUpdateOperationsInput | number
-  streak?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  matchPlayers?: Prisma.MatchPlayerUncheckedUpdateManyWithoutUserNestedInput
   queueEntries?: Prisma.QueueEntryUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -979,13 +854,11 @@ export type UserUncheckedUpdateWithoutSubmissionsInput = {
  */
 
 export type UserCountOutputType = {
-  submissions: number
   matchPlayers: number
   queueEntries: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  submissions?: boolean | UserCountOutputTypeCountSubmissionsArgs
   matchPlayers?: boolean | UserCountOutputTypeCountMatchPlayersArgs
   queueEntries?: boolean | UserCountOutputTypeCountQueueEntriesArgs
 }
@@ -998,13 +871,6 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
    * Select specific fields to fetch from the UserCountOutputType
    */
   select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SubmissionWhereInput
 }
 
 /**
@@ -1038,7 +904,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   streak?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  submissions?: boolean | Prisma.User$submissionsArgs<ExtArgs>
   matchPlayers?: boolean | Prisma.User$matchPlayersArgs<ExtArgs>
   queueEntries?: boolean | Prisma.User$queueEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1100,7 +965,6 @@ export type UserSelectScalar = {
 
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "passwordHash" | "displayName" | "avatarUrl" | "title" | "skillTier" | "elo" | "totalWins" | "totalMatches" | "totalXP" | "streak" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  submissions?: boolean | Prisma.User$submissionsArgs<ExtArgs>
   matchPlayers?: boolean | Prisma.User$matchPlayersArgs<ExtArgs>
   queueEntries?: boolean | Prisma.User$queueEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1111,7 +975,6 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    submissions: Prisma.$SubmissionPayload<ExtArgs>[]
     matchPlayers: Prisma.$MatchPlayerPayload<ExtArgs>[]
     queueEntries: Prisma.$QueueEntryPayload<ExtArgs>[]
   }
@@ -1525,7 +1388,6 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  submissions<T extends Prisma.User$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   matchPlayers<T extends Prisma.User$matchPlayersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$matchPlayersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchPlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   queueEntries<T extends Prisma.User$queueEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$queueEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QueueEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1957,30 +1819,6 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Users to delete.
    */
   limit?: number
-}
-
-/**
- * User.submissions
- */
-export type User$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Submission
-   */
-  select?: Prisma.SubmissionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Submission
-   */
-  omit?: Prisma.SubmissionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SubmissionInclude<ExtArgs> | null
-  where?: Prisma.SubmissionWhereInput
-  orderBy?: Prisma.SubmissionOrderByWithRelationInput | Prisma.SubmissionOrderByWithRelationInput[]
-  cursor?: Prisma.SubmissionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.SubmissionScalarFieldEnum | Prisma.SubmissionScalarFieldEnum[]
 }
 
 /**

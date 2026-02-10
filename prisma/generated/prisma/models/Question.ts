@@ -227,7 +227,6 @@ export type QuestionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   matchQuestions?: Prisma.MatchQuestionListRelationFilter
-  submissions?: Prisma.SubmissionListRelationFilter
 }
 
 export type QuestionOrderByWithRelationInput = {
@@ -243,7 +242,6 @@ export type QuestionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   matchQuestions?: Prisma.MatchQuestionOrderByRelationAggregateInput
-  submissions?: Prisma.SubmissionOrderByRelationAggregateInput
 }
 
 export type QuestionWhereUniqueInput = Prisma.AtLeast<{
@@ -262,7 +260,6 @@ export type QuestionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Question"> | Date | string
   matchQuestions?: Prisma.MatchQuestionListRelationFilter
-  submissions?: Prisma.SubmissionListRelationFilter
 }, "id">
 
 export type QuestionOrderByWithAggregationInput = {
@@ -312,7 +309,6 @@ export type QuestionCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   matchQuestions?: Prisma.MatchQuestionCreateNestedManyWithoutQuestionInput
-  submissions?: Prisma.SubmissionCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionUncheckedCreateInput = {
@@ -328,7 +324,6 @@ export type QuestionUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   matchQuestions?: Prisma.MatchQuestionUncheckedCreateNestedManyWithoutQuestionInput
-  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionUpdateInput = {
@@ -344,7 +339,6 @@ export type QuestionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchQuestions?: Prisma.MatchQuestionUpdateManyWithoutQuestionNestedInput
-  submissions?: Prisma.SubmissionUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionUncheckedUpdateInput = {
@@ -360,7 +354,6 @@ export type QuestionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchQuestions?: Prisma.MatchQuestionUncheckedUpdateManyWithoutQuestionNestedInput
-  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionCreateManyInput = {
@@ -468,20 +461,6 @@ export type QuestionUpdateOneRequiredWithoutMatchQuestionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.QuestionUpdateToOneWithWhereWithoutMatchQuestionsInput, Prisma.QuestionUpdateWithoutMatchQuestionsInput>, Prisma.QuestionUncheckedUpdateWithoutMatchQuestionsInput>
 }
 
-export type QuestionCreateNestedOneWithoutSubmissionsInput = {
-  create?: Prisma.XOR<Prisma.QuestionCreateWithoutSubmissionsInput, Prisma.QuestionUncheckedCreateWithoutSubmissionsInput>
-  connectOrCreate?: Prisma.QuestionCreateOrConnectWithoutSubmissionsInput
-  connect?: Prisma.QuestionWhereUniqueInput
-}
-
-export type QuestionUpdateOneRequiredWithoutSubmissionsNestedInput = {
-  create?: Prisma.XOR<Prisma.QuestionCreateWithoutSubmissionsInput, Prisma.QuestionUncheckedCreateWithoutSubmissionsInput>
-  connectOrCreate?: Prisma.QuestionCreateOrConnectWithoutSubmissionsInput
-  upsert?: Prisma.QuestionUpsertWithoutSubmissionsInput
-  connect?: Prisma.QuestionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.QuestionUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.QuestionUpdateWithoutSubmissionsInput>, Prisma.QuestionUncheckedUpdateWithoutSubmissionsInput>
-}
-
 export type QuestionCreateWithoutMatchQuestionsInput = {
   id?: string
   title: string
@@ -494,7 +473,6 @@ export type QuestionCreateWithoutMatchQuestionsInput = {
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionUncheckedCreateWithoutMatchQuestionsInput = {
@@ -509,7 +487,6 @@ export type QuestionUncheckedCreateWithoutMatchQuestionsInput = {
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
-  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionCreateOrConnectWithoutMatchQuestionsInput = {
@@ -540,7 +517,6 @@ export type QuestionUpdateWithoutMatchQuestionsInput = {
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionUncheckedUpdateWithoutMatchQuestionsInput = {
@@ -555,83 +531,6 @@ export type QuestionUncheckedUpdateWithoutMatchQuestionsInput = {
   testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutQuestionNestedInput
-}
-
-export type QuestionCreateWithoutSubmissionsInput = {
-  id?: string
-  title: string
-  description: string
-  difficulty?: $Enums.Difficulty
-  mode?: $Enums.GameMode
-  brokenCode?: string | null
-  brokenLanguage?: string | null
-  expectedOutput?: string | null
-  testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  matchQuestions?: Prisma.MatchQuestionCreateNestedManyWithoutQuestionInput
-}
-
-export type QuestionUncheckedCreateWithoutSubmissionsInput = {
-  id?: string
-  title: string
-  description: string
-  difficulty?: $Enums.Difficulty
-  mode?: $Enums.GameMode
-  brokenCode?: string | null
-  brokenLanguage?: string | null
-  expectedOutput?: string | null
-  testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  matchQuestions?: Prisma.MatchQuestionUncheckedCreateNestedManyWithoutQuestionInput
-}
-
-export type QuestionCreateOrConnectWithoutSubmissionsInput = {
-  where: Prisma.QuestionWhereUniqueInput
-  create: Prisma.XOR<Prisma.QuestionCreateWithoutSubmissionsInput, Prisma.QuestionUncheckedCreateWithoutSubmissionsInput>
-}
-
-export type QuestionUpsertWithoutSubmissionsInput = {
-  update: Prisma.XOR<Prisma.QuestionUpdateWithoutSubmissionsInput, Prisma.QuestionUncheckedUpdateWithoutSubmissionsInput>
-  create: Prisma.XOR<Prisma.QuestionCreateWithoutSubmissionsInput, Prisma.QuestionUncheckedCreateWithoutSubmissionsInput>
-  where?: Prisma.QuestionWhereInput
-}
-
-export type QuestionUpdateToOneWithWhereWithoutSubmissionsInput = {
-  where?: Prisma.QuestionWhereInput
-  data: Prisma.XOR<Prisma.QuestionUpdateWithoutSubmissionsInput, Prisma.QuestionUncheckedUpdateWithoutSubmissionsInput>
-}
-
-export type QuestionUpdateWithoutSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  difficulty?: Prisma.EnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty
-  mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
-  brokenCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  matchQuestions?: Prisma.MatchQuestionUpdateManyWithoutQuestionNestedInput
-}
-
-export type QuestionUncheckedUpdateWithoutSubmissionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  difficulty?: Prisma.EnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty
-  mode?: Prisma.EnumGameModeFieldUpdateOperationsInput | $Enums.GameMode
-  brokenCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  brokenLanguage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  expectedOutput?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  testCases?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  matchQuestions?: Prisma.MatchQuestionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 
@@ -641,12 +540,10 @@ export type QuestionUncheckedUpdateWithoutSubmissionsInput = {
 
 export type QuestionCountOutputType = {
   matchQuestions: number
-  submissions: number
 }
 
 export type QuestionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   matchQuestions?: boolean | QuestionCountOutputTypeCountMatchQuestionsArgs
-  submissions?: boolean | QuestionCountOutputTypeCountSubmissionsArgs
 }
 
 /**
@@ -666,13 +563,6 @@ export type QuestionCountOutputTypeCountMatchQuestionsArgs<ExtArgs extends runti
   where?: Prisma.MatchQuestionWhereInput
 }
 
-/**
- * QuestionCountOutputType without action
- */
-export type QuestionCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SubmissionWhereInput
-}
-
 
 export type QuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -687,7 +577,6 @@ export type QuestionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdAt?: boolean
   updatedAt?: boolean
   matchQuestions?: boolean | Prisma.Question$matchQuestionsArgs<ExtArgs>
-  submissions?: boolean | Prisma.Question$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["question"]>
 
@@ -736,7 +625,6 @@ export type QuestionSelectScalar = {
 export type QuestionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "difficulty" | "mode" | "brokenCode" | "brokenLanguage" | "expectedOutput" | "testCases" | "createdAt" | "updatedAt", ExtArgs["result"]["question"]>
 export type QuestionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   matchQuestions?: boolean | Prisma.Question$matchQuestionsArgs<ExtArgs>
-  submissions?: boolean | Prisma.Question$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type QuestionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -746,7 +634,6 @@ export type $QuestionPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Question"
   objects: {
     matchQuestions: Prisma.$MatchQuestionPayload<ExtArgs>[]
-    submissions: Prisma.$SubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1155,7 +1042,6 @@ readonly fields: QuestionFieldRefs;
 export interface Prisma__QuestionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   matchQuestions<T extends Prisma.Question$matchQuestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Question$matchQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  submissions<T extends Prisma.Question$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Question$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1605,30 +1491,6 @@ export type Question$matchQuestionsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.MatchQuestionScalarFieldEnum | Prisma.MatchQuestionScalarFieldEnum[]
-}
-
-/**
- * Question.submissions
- */
-export type Question$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Submission
-   */
-  select?: Prisma.SubmissionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Submission
-   */
-  omit?: Prisma.SubmissionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SubmissionInclude<ExtArgs> | null
-  where?: Prisma.SubmissionWhereInput
-  orderBy?: Prisma.SubmissionOrderByWithRelationInput | Prisma.SubmissionOrderByWithRelationInput[]
-  cursor?: Prisma.SubmissionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.SubmissionScalarFieldEnum | Prisma.SubmissionScalarFieldEnum[]
 }
 
 /**
